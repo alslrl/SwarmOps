@@ -1,6 +1,6 @@
 # SwarmOps
 
-> 중간발표 슬라이드: [`decks/swarmops-mid/`](decks/swarmops-mid/)
+> 중간발표 슬라이드: [`SwarmOps-중간발표.pdf`](decks/swarmops-mid/SwarmOps-중간발표.pdf)
 
 AI 구매자 에이전트 무리(swarm) 기반 셀러 최적화 대시보드.
 
