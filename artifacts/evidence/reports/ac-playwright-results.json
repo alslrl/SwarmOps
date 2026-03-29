@@ -1,0 +1,686 @@
+{
+  "generatedAt": "2026-03-29T06:44:22.580Z",
+  "runStartTime": "2026-03-29T06:43:48.169Z",
+  "runDurationMs": 24281.245,
+  "summary": {
+    "total": 96,
+    "passed": 96,
+    "failed": 0,
+    "skipped": 0
+  },
+  "passingAssertions": [
+    {
+      "suite": "playwright-artifact-consistency-ac12-3.spec.mjs",
+      "title": "AC12.3 — API simulation_complete matches latest-run-summary.json",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.813Z",
+      "durationMs": 6
+    },
+    {
+      "suite": "playwright-artifact-consistency-ac12-3.spec.mjs",
+      "title": "AC12.3 — UI display matches API simulation_complete and artifact file",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.896Z",
+      "durationMs": 1220
+    },
+    {
+      "suite": "playwright-artifact-consistency-ac12-3.spec.mjs",
+      "title": "AC12.3 — Write consistency evidence to artifacts/",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:50.405Z",
+      "durationMs": 11
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: all 6 editable input fields are pre-populated from fixtures on load",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.836Z",
+      "durationMs": 1097
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: margin-rate auto-updates when price or cost is edited",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:50.443Z",
+      "durationMs": 849
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: input fields are disabled while simulation is running",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.302Z",
+      "durationMs": 864
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: input fields are re-enabled with same values after simulation completes",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:52.179Z",
+      "durationMs": 1372
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: edited title and price values are sent in the SSE request body",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:53.561Z",
+      "durationMs": 1607
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: Strategy Lobster panel becomes visible when simulation is running",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:55.183Z",
+      "durationMs": 892
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: Strategy Lobster shows 3 candidate cards with title, price, rationale from iteration_start",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:56.084Z",
+      "durationMs": 1521
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: after simulation_complete, diff-title-before shows the user-edited title",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:57.618Z",
+      "durationMs": 1762
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: after simulation_complete, diff-price-before shows the user-edited price",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:59.390Z",
+      "durationMs": 1074
+    },
+    {
+      "suite": "playwright-input-strategy-lobster-ac8-2.spec.mjs",
+      "title": "ac8-2: full cycle — edit title + price → run → Strategy Lobster shows → diff reflects edits",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:00.472Z",
+      "durationMs": 1028
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: insights-panel is hidden before simulation starts",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.858Z",
+      "durationMs": 1906
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: insights-panel is visible after simulation_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.251Z",
+      "durationMs": 855
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: renders 3–8 data-testid=\"insight-item\" elements after simulation",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:52.115Z",
+      "durationMs": 1307
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: ⚠️ icon present for archetypes where our_product share < 25%",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:53.430Z",
+      "durationMs": 1665
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: ✅ icon present for archetypes where our_product share > 50%",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:55.105Z",
+      "durationMs": 990
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: 🟡 icon present for archetypes where pass share > 40%",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:56.112Z",
+      "durationMs": 1434
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: each insight item contains icon, archetype label, percentage, and recommended action",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:57.570Z",
+      "durationMs": 1496
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: insights panel has section title 아키타입 인사이트",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:59.095Z",
+      "durationMs": 1195
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: insights panel resets on new simulation run",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:00.302Z",
+      "durationMs": 1021
+    },
+    {
+      "suite": "playwright-insights-panel-ac10-2.spec.mjs",
+      "title": "Sub-AC 10.2: screenshot — insights panel visible in completed state",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:01.344Z",
+      "durationMs": 955
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: panel-input, panel-simulation, and panel-activity containers are all visible",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.811Z",
+      "durationMs": 651
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: layout container uses CSS grid with 3-column template",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:49.790Z",
+      "durationMs": 935
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: body overflow is hidden (single-viewport constraint per §12.1.1)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:50.737Z",
+      "durationMs": 622
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: panel-input is approximately 340px wide",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.373Z",
+      "durationMs": 875
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: panel-activity is approximately 380px wide",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:52.257Z",
+      "durationMs": 1330
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: CSS design tokens from PRD §12.2 are defined",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:53.599Z",
+      "durationMs": 1366
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: panels are laid out horizontally in 3 columns (not stacked)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:54.977Z",
+      "durationMs": 780
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: body background color is OLED black (#050505) per Vantablack Luxe theme",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:55.772Z",
+      "durationMs": 573
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: panel-results backward-compat data-testid is present inside panel-activity",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:56.356Z",
+      "durationMs": 1078
+    },
+    {
+      "suite": "playwright-layout-shell-ac4a.spec.mjs",
+      "title": "ac4a: btn-run has pill shape (border-radius 9999px) per Supanova Premium design",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:57.443Z",
+      "durationMs": 2694
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table is hidden before simulation starts",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:48.872Z",
+      "durationMs": 1073
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table visible after iteration_complete with per-archetype rows",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:50.274Z",
+      "durationMs": 922
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table contains Korean archetype labels",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.218Z",
+      "durationMs": 609
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table 우리% column shows valid percentage values",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.842Z",
+      "durationMs": 1058
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: simulation_complete adds sim-frozen class to canvas container",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:52.914Z",
+      "durationMs": 1942
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: particleEngine.frozen becomes true after simulation_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:54.877Z",
+      "durationMs": 1118
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table becomes visible within 500ms of iteration_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:56.006Z",
+      "durationMs": 1532
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: screenshot — frozen canvas state after simulation_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:57.567Z",
+      "durationMs": 1912
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-iteration label shows correct iteration number",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:59.490Z",
+      "durationMs": 983
+    },
+    {
+      "suite": "playwright-post-simulation-6d.spec.mjs",
+      "title": "Sub-AC 6d: archetype-summary-table footer shows correct grand total",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:00.482Z",
+      "durationMs": 954
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: revenue-chart exists in DOM and is initially hidden",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:50.446Z",
+      "durationMs": 822
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: revenue-chart becomes visible during/after simulation",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:51.281Z",
+      "durationMs": 825
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: revenue bars rendered — one per iteration",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:52.116Z",
+      "durationMs": 942
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: revenue bars carry correct iteration and revenue data attributes",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:53.068Z",
+      "durationMs": 1483
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: first bar has above-baseline class (baseline = first revenue)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:54.590Z",
+      "durationMs": 696
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: baseline dashed line rendered with visible coordinates",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:55.297Z",
+      "durationMs": 958
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: Y-axis labels render compact KRW notation (만 suffix)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:56.263Z",
+      "durationMs": 1183
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: SVG has viewBox set (responsive layout)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:57.453Z",
+      "durationMs": 849
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: tooltip becomes visible on bar hover",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:58.314Z",
+      "durationMs": 1567
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: horizontal grid lines rendered in SVG",
+      "status": "passed",
+      "startTime": "2026-03-29T06:43:59.896Z",
+      "durationMs": 871
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: X-axis iteration numbers rendered as text below bars",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:00.780Z",
+      "durationMs": 799
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: chart legend items visible",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:01.587Z",
+      "durationMs": 2722
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: chart bars group is cleared on new simulation start",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:04.319Z",
+      "durationMs": 1359
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: popup revenue chart renders in results popup after completion",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.688Z",
+      "durationMs": 772
+    },
+    {
+      "suite": "playwright-revenue-chart-ac10-1.spec.mjs",
+      "title": "Sub-AC 10.1: screenshot — revenue chart visible in completed state",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.472Z",
+      "durationMs": 1141
+    },
+    {
+      "suite": "playwright-screenshots-ac12.spec.mjs",
+      "title": "AC12 screenshot 1: empty_state_desktop",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:00.212Z",
+      "durationMs": 1235
+    },
+    {
+      "suite": "playwright-screenshots-ac12.spec.mjs",
+      "title": "AC12 screenshot 2: loading_state_desktop",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:01.480Z",
+      "durationMs": 1181
+    },
+    {
+      "suite": "playwright-screenshots-ac12.spec.mjs",
+      "title": "AC12 screenshot 3: completed_state_desktop",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:02.671Z",
+      "durationMs": 1607
+    },
+    {
+      "suite": "playwright-screenshots-ac12.spec.mjs",
+      "title": "AC12 screenshot 4: error_state_desktop",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:04.286Z",
+      "durationMs": 1404
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: sim-canvas element is present in DOM with data-testid=\"sim-canvas\"",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:01.492Z",
+      "durationMs": 1042
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: particle-canvas Canvas 2D element is present with correct positioning",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:02.553Z",
+      "durationMs": 1376
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: Canvas 2D context is available (getContext returns non-null)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:03.938Z",
+      "durationMs": 1245
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: RAF loop is running — window.particleEngine.running is true",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.200Z",
+      "durationMs": 650
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: canvas has non-zero dimensions after engine initialization",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.862Z",
+      "durationMs": 717
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: clearRect is functional — canvas can be cleared and redrawn",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.594Z",
+      "durationMs": 851
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: pixels appear on canvas after particle spawn and RAF tick",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:07.459Z",
+      "durationMs": 657
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: sim-canvas-wrap contains both SVG sim-canvas and particle-canvas",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:08.125Z",
+      "durationMs": 515
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: force-directed graph RAF tick updates SVG archetype node transforms",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:08.648Z",
+      "durationMs": 563
+    },
+    {
+      "suite": "playwright-sim-canvas-6a.spec.mjs",
+      "title": "Sub-AC 6a: particle engine RAF loop achieves measurable FPS",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:09.219Z",
+      "durationMs": 693
+    },
+    {
+      "suite": "playwright-sse-iteration-complete-ac8b3.spec.mjs",
+      "title": "ac8b3: iteration_complete marks winner card with candidate-winner-active class",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:01.538Z",
+      "durationMs": 1061
+    },
+    {
+      "suite": "playwright-sse-iteration-complete-ac8b3.spec.mjs",
+      "title": "ac8b3: iteration_complete shows 👑 crown span on winner card",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:02.621Z",
+      "durationMs": 1491
+    },
+    {
+      "suite": "playwright-sse-iteration-complete-ac8b3.spec.mjs",
+      "title": "ac8b3: iteration_complete updates strategy-iteration-label with current iteration",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:04.125Z",
+      "durationMs": 1170
+    },
+    {
+      "suite": "playwright-sse-iteration-complete-ac8b3.spec.mjs",
+      "title": "ac8b3: multi-iteration sequence updates label and winner on each iteration_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.306Z",
+      "durationMs": 832
+    },
+    {
+      "suite": "playwright-sse-iteration-complete-ac8b3.spec.mjs",
+      "title": "ac8b3: iteration_complete highlights first candidate card when winner_id matches slot 1",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.146Z",
+      "durationMs": 661
+    },
+    {
+      "suite": "playwright-sse-iteration-start-ac8b2.spec.mjs",
+      "title": "ac8b2: iteration_start populates candidate titles into strategy-candidate-{n} slots",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:02.338Z",
+      "durationMs": 1115
+    },
+    {
+      "suite": "playwright-sse-iteration-start-ac8b2.spec.mjs",
+      "title": "ac8b2: iteration_start populates KRW-formatted prices into candidate price slots",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:03.482Z",
+      "durationMs": 1165
+    },
+    {
+      "suite": "playwright-sse-iteration-start-ac8b2.spec.mjs",
+      "title": "ac8b2: iteration_start populates per-candidate rationale into candidate-{n}-rationale slots",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:04.657Z",
+      "durationMs": 1054
+    },
+    {
+      "suite": "playwright-sse-iteration-start-ac8b2.spec.mjs",
+      "title": "ac8b2: iteration_start populates data-testid=\"strategy-rationale\" with strategy_reasoning",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.727Z",
+      "durationMs": 782
+    },
+    {
+      "suite": "playwright-sse-iteration-start-ac8b2.spec.mjs",
+      "title": "ac8b2: winner highlight (crown + active class) cleared when new iteration_start arrives",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.525Z",
+      "durationMs": 840
+    },
+    {
+      "suite": "playwright-sse-network-logs-ac8b.spec.mjs",
+      "title": "ac8b-network: SSE endpoint returns text/event-stream Content-Type",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:05.744Z",
+      "durationMs": 817
+    },
+    {
+      "suite": "playwright-sse-network-logs-ac8b.spec.mjs",
+      "title": "ac8b-console: console output captures agent_decision events via simEventBus injection",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.588Z",
+      "durationMs": 1381
+    },
+    {
+      "suite": "playwright-sse-network-logs-ac8b.spec.mjs",
+      "title": "ac8b-force-sim: agent_decision events spawn particles in the force-directed engine",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:07.976Z",
+      "durationMs": 1186
+    },
+    {
+      "suite": "playwright-sse-network-logs-ac8b.spec.mjs",
+      "title": "ac8b-network-log: capture full SSE stream events and save artifact log",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:09.170Z",
+      "durationMs": 1022
+    },
+    {
+      "suite": "playwright-sse-network-logs-ac8b.spec.mjs",
+      "title": "ac8b-request: SSE stream POST request body contains simulation parameters",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:10.199Z",
+      "durationMs": 549
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: canvas-seller-badge element exists with correct data-testid",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:06.878Z",
+      "durationMs": 852
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: particle-canvas has pointer-events:none (non-blocking overlay)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:07.757Z",
+      "durationMs": 509
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: sim-canvas-wrap contains both SVG (sim-canvas) and Canvas (particle-canvas)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:08.277Z",
+      "durationMs": 473
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: sim-canvas-wrap gains sim-running class on simulation start",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:08.758Z",
+      "durationMs": 534
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: canvas-seller-badge gains visible class when simulation starts",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:09.297Z",
+      "durationMs": 579
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: sim-canvas-wrap gains sim-frozen class after simulation_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:09.883Z",
+      "durationMs": 778
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: canvas-seller-badge loses visible class after simulation_complete",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:10.670Z",
+      "durationMs": 816
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: CSS --node-our design token is #2563eb (seller role color)",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:11.492Z",
+      "durationMs": 442
+    },
+    {
+      "suite": "playwright-visual-polish-6e.spec.mjs",
+      "title": "Sub-AC 6e: 8 archetype nodes have distinct colors in force graph",
+      "status": "passed",
+      "startTime": "2026-03-29T06:44:11.939Z",
+      "durationMs": 484
+    }
+  ],
+  "failingAssertions": []
+}

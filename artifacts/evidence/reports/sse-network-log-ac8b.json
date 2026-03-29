@@ -1,0 +1,318 @@
+{
+  "generated_at": "2026-03-29T07:14:28.245Z",
+  "test_name": "ac8b-network-log",
+  "description": "SSE stream network logs and console output for force-directed simulation",
+  "network_log": [
+    {
+      "url": "http://127.0.0.1:3105/api/run/stream",
+      "status": 200,
+      "contentType": "text/event-stream; charset=utf-8",
+      "timestamp": "2026-03-29T07:14:27.643Z",
+      "method": "POST"
+    }
+  ],
+  "sse_event_summary": {
+    "total_events": 27,
+    "event_type_counts": {
+      "iteration_start": 1,
+      "agent_decision": 24,
+      "iteration_complete": 1,
+      "simulation_complete": 1
+    },
+    "agent_decisions_received": 24,
+    "agent_total_per_event": 800,
+    "archetypes_seen": [
+      "price_sensitive",
+      "value_seeker",
+      "premium_quality",
+      "trust_first",
+      "aesthetics_first",
+      "urgency_buyer",
+      "promo_hunter",
+      "gift_or_family_buyer"
+    ],
+    "products_seen": [
+      "our_product",
+      "competitor_a",
+      "competitor_b",
+      "competitor_c",
+      "pass"
+    ]
+  },
+  "sse_events_sample": [
+    {
+      "eventType": "iteration_start",
+      "timestamp": 484.40000000596046,
+      "iteration": 1,
+      "total": 1,
+      "candidateCount": 2
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 487.7999999821186,
+      "agentIndex": 0,
+      "archetypeId": "price_sensitive",
+      "chosenProduct": "our_product",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 488.7999999821186,
+      "agentIndex": 1,
+      "archetypeId": "value_seeker",
+      "chosenProduct": "competitor_a",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 489.19999998807907,
+      "agentIndex": 2,
+      "archetypeId": "premium_quality",
+      "chosenProduct": "competitor_b",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 489.40000000596046,
+      "agentIndex": 3,
+      "archetypeId": "trust_first",
+      "chosenProduct": "competitor_c",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 490,
+      "agentIndex": 4,
+      "archetypeId": "aesthetics_first",
+      "chosenProduct": "pass",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 490.5,
+      "agentIndex": 5,
+      "archetypeId": "urgency_buyer",
+      "chosenProduct": "our_product",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 490.7999999821186,
+      "agentIndex": 6,
+      "archetypeId": "promo_hunter",
+      "chosenProduct": "competitor_a",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 491.09999999403954,
+      "agentIndex": 7,
+      "archetypeId": "gift_or_family_buyer",
+      "chosenProduct": "competitor_b",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 491.19999998807907,
+      "agentIndex": 8,
+      "archetypeId": "price_sensitive",
+      "chosenProduct": "competitor_c",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 491.5,
+      "agentIndex": 9,
+      "archetypeId": "value_seeker",
+      "chosenProduct": "pass",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 491.69999998807907,
+      "agentIndex": 10,
+      "archetypeId": "premium_quality",
+      "chosenProduct": "our_product",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 491.7999999821186,
+      "agentIndex": 11,
+      "archetypeId": "trust_first",
+      "chosenProduct": "competitor_a",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492,
+      "agentIndex": 12,
+      "archetypeId": "aesthetics_first",
+      "chosenProduct": "competitor_b",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.19999998807907,
+      "agentIndex": 13,
+      "archetypeId": "urgency_buyer",
+      "chosenProduct": "competitor_c",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.40000000596046,
+      "agentIndex": 14,
+      "archetypeId": "promo_hunter",
+      "chosenProduct": "pass",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.5,
+      "agentIndex": 15,
+      "archetypeId": "gift_or_family_buyer",
+      "chosenProduct": "our_product",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.59999999403954,
+      "agentIndex": 16,
+      "archetypeId": "price_sensitive",
+      "chosenProduct": "competitor_a",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.90000000596046,
+      "agentIndex": 17,
+      "archetypeId": "value_seeker",
+      "chosenProduct": "competitor_b",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 492.90000000596046,
+      "agentIndex": 18,
+      "archetypeId": "premium_quality",
+      "chosenProduct": "competitor_c",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 493.09999999403954,
+      "agentIndex": 19,
+      "archetypeId": "trust_first",
+      "chosenProduct": "pass",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 493.2999999821186,
+      "agentIndex": 20,
+      "archetypeId": "aesthetics_first",
+      "chosenProduct": "our_product",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 493.40000000596046,
+      "agentIndex": 21,
+      "archetypeId": "urgency_buyer",
+      "chosenProduct": "competitor_a",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 493.59999999403954,
+      "agentIndex": 22,
+      "archetypeId": "promo_hunter",
+      "chosenProduct": "competitor_b",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "agent_decision",
+      "timestamp": 493.7999999821186,
+      "agentIndex": 23,
+      "archetypeId": "gift_or_family_buyer",
+      "chosenProduct": "competitor_c",
+      "agentTotal": 800
+    },
+    {
+      "eventType": "iteration_complete",
+      "timestamp": 495.2999999821186,
+      "iteration": 1,
+      "winnerId": "force-sim-strategy",
+      "winnerRevenue": 6200000,
+      "accepted": true
+    },
+    {
+      "eventType": "simulation_complete",
+      "timestamp": 496,
+      "strategyId": "force-sim-strategy",
+      "holdoutUplift": 548900
+    }
+  ],
+  "console_log_sample": [
+    {
+      "type": "log",
+      "text": "[SSE:network-log] Event capture listeners registered",
+      "timestamp": "2026-03-29T07:14:27.549Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] iteration_start | iter=1/1 | candidates=2",
+      "timestamp": "2026-03-29T07:14:27.646Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[0] | price_sensitive -> our_product",
+      "timestamp": "2026-03-29T07:14:27.647Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[4] | aesthetics_first -> pass",
+      "timestamp": "2026-03-29T07:14:27.647Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[8] | price_sensitive -> competitor_c",
+      "timestamp": "2026-03-29T07:14:27.649Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[12] | aesthetics_first -> competitor_b",
+      "timestamp": "2026-03-29T07:14:27.649Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[16] | price_sensitive -> competitor_a",
+      "timestamp": "2026-03-29T07:14:27.650Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] agent_decision[20] | aesthetics_first -> our_product",
+      "timestamp": "2026-03-29T07:14:27.651Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] iteration_complete | iter=1 | winner=force-sim-strategy | revenue=6200000 | accepted=true",
+      "timestamp": "2026-03-29T07:14:27.653Z"
+    },
+    {
+      "type": "log",
+      "text": "[SSE:network-log] simulation_complete | strategy=force-sim-strategy | uplift=548900",
+      "timestamp": "2026-03-29T07:14:27.653Z"
+    }
+  ],
+  "assertions_passed": {
+    "network_sse_content_type": true,
+    "iteration_start_received": true,
+    "agent_decision_received": true,
+    "iteration_complete_received": true,
+    "simulation_complete_received": true,
+    "agent_decisions_count_gte_20": true,
+    "console_output_captured": true
+  }
+}

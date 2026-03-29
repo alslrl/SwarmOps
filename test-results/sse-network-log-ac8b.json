@@ -1,0 +1,293 @@
+{
+  "timestamp": "2026-03-29T07:14:25.904Z",
+  "spec": "playwright-sse-network-log-ac8b",
+  "port": 3106,
+  "base_url": "http://127.0.0.1:3106",
+  "sse_request": {
+    "url": "http://127.0.0.1:3106/api/run/stream",
+    "method": "POST",
+    "headers": {
+      "accept": "*/*",
+      "accept-language": "en-US",
+      "origin": "http://127.0.0.1:3106",
+      "referer": "http://127.0.0.1:3106/",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36",
+      "content-type": "application/json",
+      "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"HeadlessChrome\";v=\"145\", \"Chromium\";v=\"145\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\""
+    }
+  },
+  "sse_response": {
+    "url": "http://127.0.0.1:3106/api/run/stream",
+    "status": 200,
+    "content_type": "text/event-stream; charset=utf-8",
+    "headers": {
+      "content-type": "text/event-stream; charset=utf-8",
+      "cache-control": "no-cache",
+      "content-length": "7883"
+    }
+  },
+  "events": [
+    {
+      "type": "iteration_start",
+      "ts": 1774768466619,
+      "data": {
+        "iteration": 1,
+        "total": 1,
+        "candidates": [
+          {
+            "id": "cand-alpha",
+            "title": "트리클리닉 두피과학 탈모 샴푸 500ml",
+            "price_krw": 28900,
+            "rationale": "가격 경쟁력 강화 전략"
+          },
+          {
+            "id": "cand-beta",
+            "title": "트리클리닉 전문가 설계 탈모 샴푸",
+            "price_krw": 29900,
+            "rationale": "신뢰 메시지 강화 전략"
+          },
+          {
+            "id": "cand-gamma",
+            "title": "트리클리닉 프리미엄 스칼프 샴푸",
+            "price_krw": 31900,
+            "rationale": "프리미엄 포지션 전략"
+          }
+        ],
+        "strategy_reasoning": "가격 민감형 고객 이탈 방어와 프리미엄 포지션 유지를 균형있게 테스트합니다.",
+        "agent_count": 15
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466620,
+      "data": {
+        "agent_id": "agent_0001",
+        "archetype_id": "price_sensitive",
+        "chosen_product": "our_product",
+        "agent_index": 1
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466624,
+      "data": {
+        "agent_id": "agent_0002",
+        "archetype_id": "value_seeker",
+        "chosen_product": "competitor_a",
+        "agent_index": 2
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466625,
+      "data": {
+        "agent_id": "agent_0003",
+        "archetype_id": "premium_quality",
+        "chosen_product": "competitor_b",
+        "agent_index": 3
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466625,
+      "data": {
+        "agent_id": "agent_0004",
+        "archetype_id": "trust_first",
+        "chosen_product": "competitor_c",
+        "agent_index": 4
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466625,
+      "data": {
+        "agent_id": "agent_0005",
+        "archetype_id": "aesthetics_first",
+        "chosen_product": "pass",
+        "agent_index": 5
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466625,
+      "data": {
+        "agent_id": "agent_0006",
+        "archetype_id": "urgency_buyer",
+        "chosen_product": "our_product",
+        "agent_index": 6
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0007",
+        "archetype_id": "promo_hunter",
+        "chosen_product": "competitor_a",
+        "agent_index": 7
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0008",
+        "archetype_id": "gift_or_family_buyer",
+        "chosen_product": "competitor_b",
+        "agent_index": 8
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0009",
+        "archetype_id": "price_sensitive",
+        "chosen_product": "competitor_c",
+        "agent_index": 9
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0010",
+        "archetype_id": "value_seeker",
+        "chosen_product": "pass",
+        "agent_index": 10
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0011",
+        "archetype_id": "premium_quality",
+        "chosen_product": "our_product",
+        "agent_index": 11
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466626,
+      "data": {
+        "agent_id": "agent_0012",
+        "archetype_id": "trust_first",
+        "chosen_product": "competitor_a",
+        "agent_index": 12
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466627,
+      "data": {
+        "agent_id": "agent_0013",
+        "archetype_id": "aesthetics_first",
+        "chosen_product": "competitor_b",
+        "agent_index": 13
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466627,
+      "data": {
+        "agent_id": "agent_0014",
+        "archetype_id": "urgency_buyer",
+        "chosen_product": "competitor_c",
+        "agent_index": 14
+      }
+    },
+    {
+      "type": "agent_decision",
+      "ts": 1774768466627,
+      "data": {
+        "agent_id": "agent_0015",
+        "archetype_id": "promo_hunter",
+        "chosen_product": "pass",
+        "agent_index": 15
+      }
+    },
+    {
+      "type": "iteration_complete",
+      "ts": 1774768466627,
+      "data": {
+        "iteration": 1,
+        "winner_id": "cand-alpha",
+        "winner_revenue": 5800000,
+        "accepted": true,
+        "rejected_count": 2,
+        "choice_summary": {
+          "our_product": 6,
+          "competitor_a": 4,
+          "competitor_b": 3,
+          "competitor_c": 2,
+          "pass": 1
+        },
+        "archetype_breakdown": {}
+      }
+    },
+    {
+      "type": "simulation_complete",
+      "ts": 1774768466628,
+      "data": {
+        "baseline": {
+          "simulated_revenue": 5100000,
+          "agent_count": 15
+        },
+        "selected_strategy": {
+          "id": "cand-alpha",
+          "title": "트리클리닉 두피과학 탈모 샴푸 500ml",
+          "price_krw": 28900,
+          "top_copy": "전문가 설계 두피 솔루션"
+        },
+        "holdout": {
+          "holdout_uplift": 700000,
+          "holdout_revenue": 5800000,
+          "agent_count": 20
+        },
+        "diff": {
+          "title": {
+            "before": "현재 타이틀",
+            "after": "트리클리닉 두피과학 탈모 샴푸 500ml"
+          },
+          "top_copy": {
+            "before": "현재 카피",
+            "after": "전문가 설계 두피 솔루션"
+          },
+          "price": {
+            "before": 29900,
+            "after": 28900
+          }
+        },
+        "artifact": {
+          "path": "artifacts/latest-run-summary.json",
+          "selected_strategy_id": "cand-alpha",
+          "holdout_uplift": 700000
+        },
+        "total_agents": 15,
+        "total_llm_calls": 20
+      }
+    }
+  ],
+  "console_messages": [],
+  "summary": {
+    "raw_sse_event_type_counts": {
+      "iteration_start": 1,
+      "agent_decision": 15,
+      "iteration_complete": 1,
+      "simulation_complete": 1
+    },
+    "client_received_event_counts": {
+      "iteration_start": 1,
+      "agent_decision": 15,
+      "iteration_complete": 1,
+      "simulation_complete": 1
+    },
+    "total_raw_events": 18,
+    "total_client_events": 18,
+    "sse_content_type": "text/event-stream; charset=utf-8",
+    "console_message_count": 0
+  }
+}

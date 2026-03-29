@@ -1,0 +1,163 @@
+// editor-sse.js — EventSource connection, run event handling
+
+import { state, runsById, activeRunBySlide, localFileUpdateBySlide } from './editor-state.js';
+import { slideIframe, statusDot, statusConn } from './editor-dom.js';
+import { currentSlideFile, setStatus } from './editor-utils.js';
+import { addChatMessage, renderRunsList } from './editor-chat.js';
+import { renderBboxes } from './editor-bbox.js';
+import { updateSendState } from './editor-send.js';
+
+function upsertRun(run) {
+  if (!run?.runId) return;
+  const existing = runsById.get(run.runId) || {};
+  runsById.set(run.runId, {
+    ...existing,
+    ...run,
+  });
+}
+
+export function connectSSE() {
+  const evtSource = new EventSource('/api/events');
+
+  evtSource.onopen = () => {
+    statusDot.classList.add('connected');
+    statusDot.classList.remove('disconnected');
+    statusConn.textContent = 'Connected';
+  };
+
+  evtSource.addEventListener('runsSnapshot', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+
+      runsById.clear();
+      for (const run of payload.runs || []) {
+        upsertRun(run);
+      }
+
+      activeRunBySlide.clear();
+      for (const active of payload.activeRuns || []) {
+        if (active.slide && active.runId) {
+          activeRunBySlide.set(active.slide, active.runId);
+        }
+      }
+
+      renderRunsList();
+      updateSendState();
+    } catch (error) {
+      console.error('runsSnapshot parse error:', error);
+    }
+  });
+
+  evtSource.addEventListener('applyStarted', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+      activeRunBySlide.set(payload.slide, payload.runId);
+
+      upsertRun({
+        runId: payload.runId,
+        slide: payload.slide,
+        model: payload.model || '',
+        status: 'running',
+        message: `${payload.model ? `${payload.model} | ` : ''}Running (${payload.selectionsCount || 0} bbox)`,
+        startedAt: new Date().toISOString(),
+        logPreview: '',
+      });
+
+      addChatMessage('system', `[${payload.slide}] run started (${payload.runId})`, payload.slide);
+      renderRunsList();
+      updateSendState();
+    } catch (error) {
+      console.error('applyStarted parse error:', error);
+    }
+  });
+
+  evtSource.addEventListener('applyLog', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+      if (!payload.runId) return;
+      const run = runsById.get(payload.runId);
+      if (run) {
+        run.logPreview = (String(run.logPreview || '') + String(payload.chunk || '')).slice(-2000);
+        runsById.set(payload.runId, run);
+      }
+    } catch (error) {
+      console.error('applyLog parse error:', error);
+    }
+  });
+
+  evtSource.addEventListener('applyFinished', (event) => {
+    try {
+      const payload = JSON.parse(event.data);
+      activeRunBySlide.delete(payload.slide);
+
+      upsertRun({
+        runId: payload.runId,
+        slide: payload.slide,
+        model: payload.model || '',
+        status: payload.success ? 'success' : 'failed',
+        code: payload.code,
+        message: payload.message,
+        finishedAt: new Date().toISOString(),
+      });
+
+      addChatMessage(
+        payload.success ? 'system' : 'error',
+        `[${payload.slide}] ${payload.message || (payload.success ? 'completed' : 'failed')}`,
+        payload.slide,
+      );
+
+      renderRunsList();
+      updateSendState();
+      setStatus(payload.message || 'Run finished.');
+    } catch (error) {
+      console.error('applyFinished parse error:', error);
+    }
+  });
+
+  evtSource.addEventListener('fileChanged', (event) => {
+    try {
+      const { file } = JSON.parse(event.data);
+      if (file === currentSlideFile()) {
+        const updatedAt = localFileUpdateBySlide.get(file);
+        if (updatedAt && Date.now() - updatedAt < 2000) {
+          localFileUpdateBySlide.delete(file);
+          return;
+        }
+        slideIframe.src = slideIframe.src;
+      }
+    } catch (error) {
+      console.error('fileChanged parse error:', error);
+    }
+  });
+
+  evtSource.onerror = () => {
+    statusDot.classList.remove('connected');
+    statusDot.classList.add('disconnected');
+    statusConn.textContent = 'Disconnected';
+  };
+}
+
+export async function loadRunsInitial() {
+  try {
+    const res = await fetch('/api/runs');
+    if (!res.ok) return;
+    const payload = await res.json();
+
+    runsById.clear();
+    for (const run of payload.runs || []) {
+      upsertRun(run);
+    }
+
+    activeRunBySlide.clear();
+    for (const active of payload.activeRuns || []) {
+      if (active.slide && active.runId) {
+        activeRunBySlide.set(active.slide, active.runId);
+      }
+    }
+
+    renderRunsList();
+    updateSendState();
+  } catch {
+    // ignore
+  }
+}

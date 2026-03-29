@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<base href="/slides/">
+<script>
+(() => {
+  const slideFile = "slide-03.html";
+  const localAssetPrefix = "./assets/";
+  const absolutePathRe = /^(file:\/\/|\/Users\/|\/home\/|\/var\/|\/tmp\/|\/private\/|\/Volumes\/|[A-Za-z]:[\\/]|\\\\)/i;
+  const prefix = '[slides-grab:image]';
+
+  function describeElement(element) {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) return '';
+    if (element === document.body) return 'body';
+
+    const parts = [];
+    let current = element;
+    while (current && current.nodeType === Node.ELEMENT_NODE && current !== document.body) {
+      let part = current.tagName.toLowerCase();
+      if (current.id) {
+        part += '#' + current.id;
+        parts.unshift(part);
+        break;
+      }
+      if (current.classList.length > 0) {
+        part += '.' + Array.from(current.classList).slice(0, 2).join('.');
+      }
+      parts.unshift(part);
+      current = current.parentElement;
+    }
+    return 'body > ' + parts.join(' > ');
+  }
+
+  function warn(message, detail) {
+    console.warn(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  function fail(message, detail) {
+    console.error(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  window.addEventListener('error', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement)) return;
+    const src = (target.getAttribute('src') || target.currentSrc || '').trim();
+    if (!src || src.startsWith('data:')) return;
+    if (src.startsWith(localAssetPrefix)) {
+      fail('missing local asset', { src });
+      return;
+    }
+    fail('image failed to load', { src });
+  }, true);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    for (const image of document.querySelectorAll('img[src]')) {
+      const src = (image.getAttribute('src') || '').trim();
+      if (!src || src.startsWith('data:')) continue;
+      if (src.startsWith('https://')) {
+        fail('remote image URL is unsupported in saved slides; download it into ./assets/<file>', { src });
+        continue;
+      }
+      if (src.startsWith('http://')) {
+        fail('remote http:// image URL is unsupported in saved slides; download it into ./assets/<file>', { src });
+        continue;
+      }
+      if (absolutePathRe.test(src) || src.startsWith('/')) {
+        fail('non-portable image path is unsupported', { src });
+        continue;
+      }
+      if (!src.startsWith(localAssetPrefix)) {
+        warn('noncanonical local image path should use ./assets/<file>', { src });
+      }
+    }
+
+    for (const element of document.body.querySelectorAll('*')) {
+      if (element === document.body) continue;
+      const backgroundImage = window.getComputedStyle(element).backgroundImage;
+      if (!backgroundImage || backgroundImage === 'none' || !backgroundImage.includes('url(')) continue;
+      fail('non-body background-image is not supported for slide content', {
+        element: describeElement(element),
+        backgroundImage,
+      });
+    }
+  });
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=720,height=405">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:720pt;height:405pt;font-family:'Pretendard',sans-serif;background:#0a0a0a;color:#f5f5f5;display:flex;flex-direction:column;justify-content:center;overflow:hidden;padding:48px 64px}
+.label{display:inline-block;margin-bottom:14px}
+.label p{font-size:11px;font-weight:600;color:#3b82f6;letter-spacing:1.5px;text-transform:uppercase}
+h1{font-size:26px;font-weight:700;line-height:1.35;letter-spacing:-0.3px;margin-bottom:10px}
+p.definition{font-size:15px;color:#a3a3a3;line-height:1.5;margin-bottom:28px;max-width:560px}
+.approach{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#141414;border:1px solid #262626;border-radius:10px;padding:20px}
+.card h2{font-size:14px;font-weight:600;color:#f5f5f5;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card h2 span.icon{font-size:18px}
+.card p{font-size:12.5px;color:#a3a3a3;line-height:1.55}
+.card p strong{color:#d4d4d4}
+.inspiration{margin-top:20px;border-top:1px solid #262626;padding-top:16px;display:flex;align-items:center;gap:10px}
+.inspiration p{font-size:12px;color:#525252;line-height:1.5}
+.inspiration p span{color:#737373;font-weight:500}
+</style>
+</head>
+<body>
+<div class="label"><p>SOLUTION</p></div>
+<h1>800명의 AI 구매자로 전략을 미리 검증</h1>
+<p class="definition">출시 전에, 경쟁사 대비 우월한 상품 전략을 가지고 갈 수 있는 시뮬레이션 대시보드</p>
+<div class="approach">
+  <div class="card">
+    <h2><span class="icon">👥</span> 8개 소비자 아키타입</h2>
+    <p>가격민감형, 프리미엄, 신뢰우선형 등 <strong>한국 소비자 8개 유형</strong>에서 800명의 개별 에이전트 생성</p>
+  </div>
+  <div class="card">
+    <h2><span class="icon">🧠</span> 개별 LLM 판단</h2>
+    <p>각 에이전트가 <strong>독립적으로 "살까 말까"</strong>를 판단 — 집단 평균이 아닌 개인별 의사결정</p>
+  </div>
+  <div class="card">
+    <h2><span class="icon">🔁</span> 반복 시뮬레이션</h2>
+    <p style="font-weight: 700;">AI가 전략 후보 3개를 제안하고, 800명이 평가하는 과정을 반복하며 최적해 탐색</p>
+  </div>
+  <div class="card">
+    <h2><span class="icon">✅</span> 홀드아웃 검증</h2>
+    <p>선택된 전략을 <strong>별도 200명</strong>으로 재검증 — 과적합을 방지하는 신뢰성 확보</p>
+  </div>
+</div>
+<div class="inspiration">
+  <p><span>Inspired by Mirofish</span> — 대규모 AI 에이전트에 페르소나를 부여하면 인간의 선택을 시뮬레이션할 수 있다</p>
+</div>
+
+
+</body></html>

@@ -1,0 +1,419 @@
+================================================================================
+SSE AUDIT REPORT — seller-war-game
+Generated: 2026-03-29
+Sub-AC 1 + Sub-AC 2 + Sub-AC 3 findings compiled
+================================================================================
+
+PURPOSE
+-------
+This audit documents all SSE-related code in the codebase, whether
+stream-formatter.mjs exists, and the exact gap that blocks AC3.
+
+No code was changed during this audit.
+
+================================================================================
+SECTION 1: FILES IDENTIFIED BY SSE SCAN
+================================================================================
+
+Command run:
+  find src -name '*.mjs' | xargs grep -l 'text/event-stream|EventSource|SSE|stream'
+
+Files returned (11 total):
+
+  src/server.mjs
+  src/lib/simulation/engine.mjs
+  src/lib/simulation/agent-spawner.mjs
+  src/lib/simulation/buyerAgent.mjs
+  src/lib/simulation/iteration-result-accumulator.mjs
+  src/lib/agentSimulation.mjs
+  src/lib/derive-insights.mjs
+  src/lib/reports/generate-evidence-bundle.mjs
+  src/lib/reports/verify-artifacts.mjs
+  src/lib/reports/generate-consistency-report.mjs
+  src/app/particle-engine.mjs
+
+Additional file NOT returned by grep but directly relevant to SSE schema:
+  src/lib/simulation/sse-events.d.ts  (TypeScript type declarations)
+
+================================================================================
+SECTION 2: stream-formatter.mjs — EXISTENCE CHECK
+================================================================================
+
+STATUS: *** MISSING — FILE DOES NOT EXIST ***
+
+Expected path:  src/lib/sse/stream-formatter.mjs
+Directory:      src/lib/sse/  — EXISTS but is EMPTY (0 files)
+
+Import in server.mjs (line 7):
+  import { formatSimulationEvent } from './lib/sse/stream-formatter.mjs';
+
+Usage in server.mjs (lines 119, 126):
+  res.write(formatSimulationEvent(event));                          // line 119
+  res.write(formatSimulationEvent({ type: 'error', ... }));        // line 126
+
+CONSEQUENCE:
+  The server will throw an ERR_MODULE_NOT_FOUND error on startup.
+  POST /api/run/stream is completely non-functional.
+  This is the primary AC3 blocker.
+
+================================================================================
+SECTION 3: INDIVIDUAL FILE ANALYSIS
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/server.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: HTTP server entry point. Implements the SSE endpoint.
+
+SSE endpoint:  POST /api/run/stream  (lines 94–130)
+
+Headers emitted (lines 102–107):
+  Content-Type:      text/event-stream; charset=utf-8
+  Cache-Control:     no-cache
+  Connection:        keep-alive
+  X-Accel-Buffering: no
+
+Flow:
+  1. Parse request body (title, topCopy, priceKrw, costKrw, iterationCount,
+     minimumMarginFloor)
+  2. Call runSimulation() with onEvent callback
+  3. In onEvent: call formatSimulationEvent(event) → write to response
+  4. On simulation_complete: call res.end()
+  5. On error: emit error event, res.end()
+
+PROBLEM:
+  formatSimulationEvent is imported from src/lib/sse/stream-formatter.mjs
+  which does not exist. The server cannot start.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/simulation/engine.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Core simulation orchestrator. Fires onEvent callbacks at each lifecycle point.
+
+Event types emitted (in order per iteration):
+
+  1. iteration_start  (line 257–263)
+     Shape:
+       { type: 'iteration_start',
+         iteration: number,        // 1-based
+         total: number,
+         candidates: [{id, title, price_krw}] }
+
+  2. agent_decision  (×800, lines 311–352)
+     Shape:
+       { type: 'agent_decision',
+         iteration: number,
+         agent_id: string,
+         agent_name: string,       // Korean display name e.g. "구매자 #42"
+         archetype_id: string,
+         chosen_product: 'our_product'|'competitor_a'|'competitor_b'|'competitor_c'|'pass',
+         decision: string,         // alias for chosen_product
+         reasoning: string,
+         score: number,            // 0–1 utility score
+         agent_index: number,      // 0-based
+         agent_total: number,      // typically 800
+         price_sensitivity: number|null,
+         trust_sensitivity: number|null,
+         promo_affinity: number|null,
+         brand_bias: number|null,
+         pass_threshold: number|null,
+         budget_band: string|null }
+
+  3. iteration_complete  (lines 356–370)
+     Shape (FLAT — raw from engine before formatter):
+       { type: 'iteration_complete',
+         iteration: number,
+         winner_id: string,
+         winner_revenue: number,    // KRW integer
+         accepted: boolean,
+         rejected_count: number,
+         choice_summary: {          // FLAT counts
+           our_product: number,
+           competitor_a: number,
+           competitor_b: number,
+           competitor_c: number,
+           pass: number },
+         archetype_breakdown: {     // FLAT nested counts
+           [archetype_id]: {
+             our_product: number, competitor_a: number,
+             competitor_b: number, competitor_c: number, pass: number } },
+         archetypes: [{id, label}]  // archetype metadata for formatter }
+
+  4. holdout_start  (lines 382–386)
+     Shape:
+       { type: 'holdout_start',
+         message: string }
+
+  5. simulation_complete  (lines 437–445)
+     Shape:
+       { type: 'simulation_complete',
+         baseline: ScoredStrategy,
+         selected_strategy: CandidateStrategy,
+         holdout: { holdout_uplift, baseline_revenue, final_revenue },
+         diff: { title, top_copy, price },
+         artifact: { path, written_at } }
+
+NOTE: engine.mjs emits iteration_complete with FLAT choice_summary and FLAT
+archetype_breakdown. The stream-formatter is responsible for converting these
+to the explicit {count, pct} format required by Sub-AC 3c.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/simulation/sse-events.d.ts
+────────────────────────────────────────────────────────────────────────────────
+ROLE: TypeScript type declarations for all SSE events (read-only documentation).
+
+Defines canonical interfaces:
+  StrategyCandidate, ProductChoice, ChoiceSummary, ArchetypeBreakdown
+  IterationStartEvent, AgentDecisionEvent, IterationCompleteEvent,
+  HoldoutStartEvent, SimulationCompleteEvent, SimulationErrorEvent
+  SimulationEvent (union type)
+  CandidateStrategy, ScoredStrategy, HoldoutResult, DiffField, StrategyDiff,
+  ArtifactMeta
+
+NOTE: ChoiceSummary in this file defines FLAT counts (our_product: number).
+This does not reflect the Sub-AC 3c explicit {count, pct} shape required
+by iteration-result-accumulator.mjs and derive-insights.mjs.
+The TypeScript types are therefore INCONSISTENT with the expected runtime shape.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/simulation/iteration-result-accumulator.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Accumulates iteration_complete SSE events for UI chart and insights.
+
+EXPECTS Sub-AC 3c EXPLICIT format from stream-formatter.mjs:
+
+  choice_summary (explicit format):
+    { our_product: {count: number, pct: number},
+      competitor_a: {count: number, pct: number},
+      competitor_b: {count: number, pct: number},
+      competitor_c: {count: number, pct: number},
+      pass:         {count: number, pct: number} }
+
+  archetype_breakdown (explicit format):
+    [ { archetype_id: string,
+        archetype_label: string,
+        sample_size: number,
+        choices: { [key]: {count: number, pct: number} } } ]
+
+This module will FAIL silently or produce wrong data if stream-formatter.mjs
+is absent (because engine emits flat format, not explicit format).
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/derive-insights.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Derives actionable insights from archetype_breakdown data.
+
+Accepts TWO input formats (normalises internally):
+  1. Flat object: {[archetypeId]: {our_product: number, ...}}
+  2. Array (Sub-AC 3c SSE format): [{archetype_id, archetype_label, choices: {key: {count, pct}}}]
+
+This module is defensive and backward-compatible. It will work with either
+flat or explicit format — no hard dependency on stream-formatter output.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/app/dashboard.js
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Browser-side SSE consumer and UI controller.
+
+SSE implementation pattern:
+  Uses fetch() + ReadableStream (NOT the EventSource API).
+  Manual SSE line parsing: buffers text, splits on '\n', extracts 'event:' and 'data:' lines.
+  Uses JSON.parse() on data lines.
+  Dispatches to handleSSEEvent(type, data) at line 816.
+
+Key SSE runner: runSimulation() at line 1330
+  - POSTs to /api/run/stream with JSON body
+  - Parses raw SSE text from response.body.getReader()
+  - Has SSE_PARSE_ERROR_THRESHOLD = 5 (aborts stream after 5 consecutive bad lines)
+
+Event handlers in handleSSEEvent() (line 816):
+  - iteration_start: reset UI per-iteration state
+  - agent_decision: feed particle engine, update agent log
+  - iteration_complete: update revenue chart via IterationResultAccumulator
+  - holdout_start: show holdout status message
+  - simulation_complete: render final results panel
+  - error: show error state
+
+SSE wire format expected by dashboard.js:
+  event: <type>\n
+  data: <json>\n
+  \n
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/app/particle-engine.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Canvas-based particle flow visualization.
+SSE relevance: Driven by agent_decision events (comment at line 202).
+No direct SSE parsing — receives pre-parsed data from dashboard.js.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/agentSimulation.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Standalone agent batch runner (spawn + evaluate in one call).
+SSE relevance: Comments only — explicitly designed to be SSE-free.
+Does not implement any streaming.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/simulation/agent-spawner.mjs
+────────────────────────────────────────────────────────────────────────────────
+SSE relevance: Comment mentions "RNG stream" — not related to HTTP streaming.
+No SSE implementation.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/simulation/buyerAgent.mjs
+────────────────────────────────────────────────────────────────────────────────
+SSE relevance: Comment mentions "trait RNG stream" — not related to HTTP streaming.
+No SSE implementation.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/reports/generate-consistency-report.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Evidence generator. Runs an in-process SSE simulation and validates events.
+
+SSE implementation:
+  - Spawns server, makes HTTP request to /api/run/stream (line 94)
+  - Implements parseSseText() helper to parse raw SSE wire format
+  - Validates: 800 agent_decision events per iteration, 1 iteration_start,
+    1 iteration_complete, 1 simulation_complete
+
+Will fail while stream-formatter.mjs is missing (server won't start).
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/reports/generate-evidence-bundle.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Evidence bundle generator. References SSE in evidence metadata only.
+No direct SSE implementation.
+
+────────────────────────────────────────────────────────────────────────────────
+FILE: src/lib/reports/verify-artifacts.mjs
+────────────────────────────────────────────────────────────────────────────────
+ROLE: Artifact verification. References SSE screenshots in checklist.
+No direct SSE implementation.
+
+================================================================================
+SECTION 4: SSE WIRE FORMAT SPECIFICATION
+================================================================================
+
+Expected SSE wire format for each event:
+  event: <type>\n
+  data: <json>\n
+  \n
+
+Where <type> is one of:
+  iteration_start | agent_decision | iteration_complete |
+  holdout_start | simulation_complete | error
+
+The formatSimulationEvent() function (to be implemented in stream-formatter.mjs)
+MUST:
+  1. Accept a raw event object from engine.mjs onEvent callback
+  2. For iteration_complete events: transform payload fields to explicit format:
+     a. choice_summary: flat {key: count} → explicit {key: {count, pct}}
+        where pct = count / total_buyers * 100 (rounded to 1 decimal)
+     b. archetype_breakdown: flat {[id]: {key: count}} → explicit array:
+        [{archetype_id, archetype_label, sample_size, choices: {key: {count, pct}}}]
+        archetype_label resolved from event.archetypes[].label
+  3. Return formatted SSE string: "event: <type>\ndata: <json>\n\n"
+  4. Handle all event types (pass-through for non-iteration_complete events)
+
+================================================================================
+SECTION 5: CANONICAL PAYLOAD SCHEMAS (Sub-AC 3c)
+================================================================================
+
+Based on iteration-result-accumulator.mjs documentation (the authoritative consumer):
+
+choice_summary_payload (explicit format):
+  {
+    our_product:  { count: number, pct: number },
+    competitor_a: { count: number, pct: number },
+    competitor_b: { count: number, pct: number },
+    competitor_c: { count: number, pct: number },
+    pass:         { count: number, pct: number }
+  }
+  where pct = (count / sum_of_all_counts) * 100
+
+archetype_breakdown_payload (explicit format):
+  [
+    {
+      archetype_id:    string,
+      archetype_label: string,   // Korean label from archetypes[] or fallback to id
+      sample_size:     number,   // total agents in this archetype
+      choices: {
+        our_product:  { count: number, pct: number },
+        competitor_a: { count: number, pct: number },
+        competitor_b: { count: number, pct: number },
+        competitor_c: { count: number, pct: number },
+        pass:         { count: number, pct: number }
+      }
+    },
+    ...
+  ]
+  where pct = (count / sample_size) * 100 per archetype
+
+================================================================================
+SECTION 6: DEPENDENCY CHAIN (AC3 as gating milestone)
+================================================================================
+
+stream-formatter.mjs (MISSING)
+  ↓ required by
+src/server.mjs  → POST /api/run/stream endpoint
+  ↓ required by
+src/app/dashboard.js → runSimulation() fetch handler
+  ↓ required by
+AC4 (UI states): loading, results panel, archetype insights
+  ↓ required by
+AC5 (agent decision events): particle flow, agent chat log
+  ↓ required by
+AC6 (iteration accumulator): revenue chart, final results
+  ↓ required by
+AC7 (test suite): Playwright E2E tests for SSE events
+  ↓ required by
+AC8 (evidence bundle): consistency report, artifact verification
+
+================================================================================
+SECTION 7: SUMMARY OF FINDINGS
+================================================================================
+
+CRITICAL BLOCKER:
+  src/lib/sse/stream-formatter.mjs does NOT exist.
+  The directory src/lib/sse/ exists but is empty.
+  server.mjs imports formatSimulationEvent from this file → server crashes on start.
+
+FILES IMPLEMENTING SSE (server-side):
+  - src/server.mjs          → SSE headers + endpoint wiring (complete, but broken import)
+  - src/lib/simulation/engine.mjs  → onEvent emission of all 5 event types (complete)
+
+FILES IMPLEMENTING SSE (client-side):
+  - src/app/dashboard.js    → fetch-based SSE consumer with manual line parsing (complete)
+
+FILES CONSUMING SSE EVENTS (client/server-side):
+  - src/lib/simulation/iteration-result-accumulator.mjs  → expects explicit format
+  - src/lib/derive-insights.mjs                          → accepts both formats
+  - src/app/particle-engine.mjs                          → driven by agent_decision
+
+FILES WITH SSE IN COMMENTS ONLY (no implementation):
+  - src/lib/agentSimulation.mjs
+  - src/lib/simulation/agent-spawner.mjs
+  - src/lib/simulation/buyerAgent.mjs
+  - src/lib/reports/generate-evidence-bundle.mjs
+  - src/lib/reports/verify-artifacts.mjs
+
+FILES VALIDATING SSE OUTPUT:
+  - src/lib/reports/generate-consistency-report.mjs  → in-process SSE run + validation
+
+TYPE DECLARATIONS (no runtime effect):
+  - src/lib/simulation/sse-events.d.ts  → TypeScript interfaces for all event types
+    NOTE: ChoiceSummary here uses flat numbers, inconsistent with Sub-AC 3c explicit
+    {count, pct} shape needed by iteration-result-accumulator.mjs
+
+ACTION REQUIRED TO FIX AC3:
+  Create src/lib/sse/stream-formatter.mjs exporting:
+    export function formatSimulationEvent(event): string
+  That function must:
+    1. For iteration_complete: transform choice_summary to {count, pct} format
+       and archetype_breakdown to array format with archetype_label
+    2. For all events: serialize to SSE wire format "event: <type>\ndata: <json>\n\n"
+    3. Handle the 'error' event type explicitly
+
+================================================================================
+END OF AUDIT
+================================================================================

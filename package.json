@@ -1,0 +1,19 @@
+{
+  "name": "seller-war-game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.mjs",
+    "start": "node src/server.mjs",
+    "test": "node --test tests/ac11-sub1-unit-integration.test.mjs tests/game-logic-ac11.test.mjs tests/api-routes-ac11.test.mjs tests/agentSimulation.test.mjs tests/agentUtils.test.mjs tests/api-price-override.test.mjs tests/buyerAgent.test.mjs tests/dashboard-smoke.test.mjs tests/engine.test.mjs tests/evaluator-individual-agent.test.mjs tests/fixtures.test.mjs tests/judge.test.mjs tests/report-artifact.test.mjs tests/sampler.test.mjs tests/schemas.test.mjs tests/scorer.test.mjs tests/sse-individual-agent-verification.test.mjs tests/sse.test.mjs",
+    "test:e2e": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  },
+  "dependencies": {
+    "p-limit": "^7.3.0",
+    "slides-grab": "^1.2.0"
+  }
+}

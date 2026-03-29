@@ -1,0 +1,341 @@
+{
+  "manifest_version": "v1",
+  "generated_at": "2026-03-29T08:09:00.966Z",
+  "project": "seller-war-game",
+  "sub_ac": "8d",
+  "description": "Structured evidence directory for the seller-war-game operator dashboard demo. Bundles all captured screenshots, harness/watchdog logs, and test/judgment reports into artifacts/evidence/ with this index.json manifest.",
+  "directory_layout": {
+    "root": "artifacts/evidence/",
+    "subdirs": {
+      "screenshots": "artifacts/evidence/screenshots/",
+      "logs": "artifacts/evidence/logs/",
+      "reports": "artifacts/evidence/reports/"
+    }
+  },
+  "screenshots": {
+    "directory": "artifacts/evidence/screenshots/",
+    "count": 27,
+    "files": [
+      {
+        "filename": "01-initial-load.png",
+        "src": "artifacts/screenshots/01-initial-load.png",
+        "dst": "artifacts/evidence/screenshots/01-initial-load.png",
+        "size_bytes": 279366,
+        "mtime": "2026-03-29T07:14:15.612Z"
+      },
+      {
+        "filename": "02-simulation-running.png",
+        "src": "artifacts/screenshots/02-simulation-running.png",
+        "dst": "artifacts/evidence/screenshots/02-simulation-running.png",
+        "size_bytes": 268441,
+        "mtime": "2026-03-29T07:14:16.372Z"
+      },
+      {
+        "filename": "02b-loading-particles-midflight.png",
+        "src": "artifacts/screenshots/02b-loading-particles-midflight.png",
+        "dst": "artifacts/evidence/screenshots/02b-loading-particles-midflight.png",
+        "size_bytes": 268883,
+        "mtime": "2026-03-29T07:14:23.064Z"
+      },
+      {
+        "filename": "03-results-populated.png",
+        "src": "artifacts/screenshots/03-results-populated.png",
+        "dst": "artifacts/evidence/screenshots/03-results-populated.png",
+        "size_bytes": 302486,
+        "mtime": "2026-03-29T07:14:17.354Z"
+      },
+      {
+        "filename": "04-error-state.png",
+        "src": "artifacts/screenshots/04-error-state.png",
+        "dst": "artifacts/evidence/screenshots/04-error-state.png",
+        "size_bytes": 266761,
+        "mtime": "2026-03-29T07:14:18.283Z"
+      },
+      {
+        "filename": "05-agent-profile-popup.png",
+        "src": "artifacts/screenshots/05-agent-profile-popup.png",
+        "dst": "artifacts/evidence/screenshots/05-agent-profile-popup.png",
+        "size_bytes": 193366,
+        "mtime": "2026-03-29T07:14:19.247Z"
+      },
+      {
+        "filename": "ac10-1-full-completed-state.png",
+        "src": "artifacts/screenshots/ac10-1-full-completed-state.png",
+        "dst": "artifacts/evidence/screenshots/ac10-1-full-completed-state.png",
+        "size_bytes": 299452,
+        "mtime": "2026-03-29T07:14:18.578Z"
+      },
+      {
+        "filename": "ac10-1-revenue-chart.png",
+        "src": "artifacts/screenshots/ac10-1-revenue-chart.png",
+        "dst": "artifacts/evidence/screenshots/ac10-1-revenue-chart.png",
+        "size_bytes": 13160,
+        "mtime": "2026-03-29T07:14:18.415Z"
+      },
+      {
+        "filename": "ac10-2-full-completed-state.png",
+        "src": "artifacts/screenshots/ac10-2-full-completed-state.png",
+        "dst": "artifacts/evidence/screenshots/ac10-2-full-completed-state.png",
+        "size_bytes": 297296,
+        "mtime": "2026-03-29T07:14:07.807Z"
+      },
+      {
+        "filename": "ac10-2-insights-panel.png",
+        "src": "artifacts/screenshots/ac10-2-insights-panel.png",
+        "dst": "artifacts/evidence/screenshots/ac10-2-insights-panel.png",
+        "size_bytes": 42787,
+        "mtime": "2026-03-29T07:14:07.688Z"
+      },
+      {
+        "filename": "ac11-sub3-01-empty-state.png",
+        "src": "artifacts/screenshots/ac11-sub3-01-empty-state.png",
+        "dst": "artifacts/evidence/screenshots/ac11-sub3-01-empty-state.png",
+        "size_bytes": 274864,
+        "mtime": "2026-03-29T07:14:05.552Z"
+      },
+      {
+        "filename": "ac11-sub3-02-completed-state.png",
+        "src": "artifacts/screenshots/ac11-sub3-02-completed-state.png",
+        "dst": "artifacts/evidence/screenshots/ac11-sub3-02-completed-state.png",
+        "size_bytes": 314062,
+        "mtime": "2026-03-29T07:14:06.393Z"
+      },
+      {
+        "filename": "ac11-sub3-03-simulation-panel.png",
+        "src": "artifacts/screenshots/ac11-sub3-03-simulation-panel.png",
+        "dst": "artifacts/evidence/screenshots/ac11-sub3-03-simulation-panel.png",
+        "size_bytes": 122648,
+        "mtime": "2026-03-29T07:14:06.532Z"
+      },
+      {
+        "filename": "ac11-sub3-04-activity-panel.png",
+        "src": "artifacts/screenshots/ac11-sub3-04-activity-panel.png",
+        "dst": "artifacts/evidence/screenshots/ac11-sub3-04-activity-panel.png",
+        "size_bytes": 83055,
+        "mtime": "2026-03-29T07:14:06.650Z"
+      },
+      {
+        "filename": "ac4d-01-mid-flow-sim-canvas.png",
+        "src": "artifacts/screenshots/ac4d-01-mid-flow-sim-canvas.png",
+        "dst": "artifacts/evidence/screenshots/ac4d-01-mid-flow-sim-canvas.png",
+        "size_bytes": 131850,
+        "mtime": "2026-03-29T07:14:23.801Z"
+      },
+      {
+        "filename": "ac4d-02-mid-flow-full-page.png",
+        "src": "artifacts/screenshots/ac4d-02-mid-flow-full-page.png",
+        "dst": "artifacts/evidence/screenshots/ac4d-02-mid-flow-full-page.png",
+        "size_bytes": 321126,
+        "mtime": "2026-03-29T07:14:23.915Z"
+      },
+      {
+        "filename": "ac4d-03-canvas-pixel-check.png",
+        "src": "artifacts/screenshots/ac4d-03-canvas-pixel-check.png",
+        "dst": "artifacts/evidence/screenshots/ac4d-03-canvas-pixel-check.png",
+        "size_bytes": 119179,
+        "mtime": "2026-03-29T07:14:26.217Z"
+      },
+      {
+        "filename": "ac4d-04-archetype-table-loading-state.png",
+        "src": "artifacts/screenshots/ac4d-04-archetype-table-loading-state.png",
+        "dst": "artifacts/evidence/screenshots/ac4d-04-archetype-table-loading-state.png",
+        "size_bytes": 335958,
+        "mtime": "2026-03-29T07:14:27.006Z"
+      },
+      {
+        "filename": "ac4d-05-sim-panel-with-archetype-table.png",
+        "src": "artifacts/screenshots/ac4d-05-sim-panel-with-archetype-table.png",
+        "dst": "artifacts/evidence/screenshots/ac4d-05-sim-panel-with-archetype-table.png",
+        "size_bytes": 126618,
+        "mtime": "2026-03-29T07:14:27.119Z"
+      },
+      {
+        "filename": "ac6c-01-bucket-zones-completed.png",
+        "src": "artifacts/screenshots/ac6c-01-bucket-zones-completed.png",
+        "dst": "artifacts/evidence/screenshots/ac6c-01-bucket-zones-completed.png",
+        "size_bytes": 115993,
+        "mtime": "2026-03-29T07:14:14.730Z"
+      },
+      {
+        "filename": "ac6c-02-full-page-completed.png",
+        "src": "artifacts/screenshots/ac6c-02-full-page-completed.png",
+        "dst": "artifacts/evidence/screenshots/ac6c-02-full-page-completed.png",
+        "size_bytes": 295118,
+        "mtime": "2026-03-29T07:14:14.884Z"
+      },
+      {
+        "filename": "ac6d-01-sim-panel-frozen-state.png",
+        "src": "artifacts/screenshots/ac6d-01-sim-panel-frozen-state.png",
+        "dst": "artifacts/evidence/screenshots/ac6d-01-sim-panel-frozen-state.png",
+        "size_bytes": 125644,
+        "mtime": "2026-03-29T07:14:14.144Z"
+      },
+      {
+        "filename": "ac6d-02-full-page-completed-state.png",
+        "src": "artifacts/screenshots/ac6d-02-full-page-completed-state.png",
+        "dst": "artifacts/evidence/screenshots/ac6d-02-full-page-completed-state.png",
+        "size_bytes": 319669,
+        "mtime": "2026-03-29T07:14:14.272Z"
+      },
+      {
+        "filename": "completed_state_desktop.png",
+        "src": "artifacts/screenshots/completed_state_desktop.png",
+        "dst": "artifacts/evidence/screenshots/completed_state_desktop.png",
+        "size_bytes": 301990,
+        "mtime": "2026-03-29T07:14:13.211Z"
+      },
+      {
+        "filename": "empty_state_desktop.png",
+        "src": "artifacts/screenshots/empty_state_desktop.png",
+        "dst": "artifacts/evidence/screenshots/empty_state_desktop.png",
+        "size_bytes": 280399,
+        "mtime": "2026-03-29T07:14:11.198Z"
+      },
+      {
+        "filename": "error_state_desktop.png",
+        "src": "artifacts/screenshots/error_state_desktop.png",
+        "dst": "artifacts/evidence/screenshots/error_state_desktop.png",
+        "size_bytes": 266684,
+        "mtime": "2026-03-29T07:14:14.317Z"
+      },
+      {
+        "filename": "loading_state_desktop.png",
+        "src": "artifacts/screenshots/loading_state_desktop.png",
+        "dst": "artifacts/evidence/screenshots/loading_state_desktop.png",
+        "size_bytes": 263318,
+        "mtime": "2026-03-29T07:14:12.098Z"
+      }
+    ]
+  },
+  "logs": {
+    "directory": "artifacts/evidence/logs/",
+    "count": 6,
+    "files": [
+      {
+        "filename": "ralph-harness-20260329-100649.log",
+        "src": "ralph-harness-20260329-100649.log",
+        "dst": "artifacts/evidence/logs/ralph-harness-20260329-100649.log",
+        "size_bytes": 997,
+        "mtime": "2026-03-29T01:07:40.145Z"
+      },
+      {
+        "filename": "ralph-harness-20260329-100754.log",
+        "src": "ralph-harness-20260329-100754.log",
+        "dst": "artifacts/evidence/logs/ralph-harness-20260329-100754.log",
+        "size_bytes": 864,
+        "mtime": "2026-03-29T01:08:59.793Z"
+      },
+      {
+        "filename": "ralph-harness-20260329-100918.log",
+        "src": "ralph-harness-20260329-100918.log",
+        "dst": "artifacts/evidence/logs/ralph-harness-20260329-100918.log",
+        "size_bytes": 575,
+        "mtime": "2026-03-29T01:11:36.193Z"
+      },
+      {
+        "filename": "ralph-harness-20260329-101324.log",
+        "src": "ralph-harness-20260329-101324.log",
+        "dst": "artifacts/evidence/logs/ralph-harness-20260329-101324.log",
+        "size_bytes": 575,
+        "mtime": "2026-03-29T01:15:39.361Z"
+      },
+      {
+        "filename": "watchdog.log",
+        "src": "watchdog.log",
+        "dst": "artifacts/evidence/logs/watchdog.log",
+        "size_bytes": 1747,
+        "mtime": "2026-03-29T02:59:09.159Z"
+      },
+      {
+        "filename": "sse-audit.txt",
+        "src": "artifacts/sse-audit.txt",
+        "dst": "artifacts/evidence/logs/sse-audit.txt",
+        "size_bytes": 22187,
+        "mtime": "2026-03-29T01:50:30.795Z"
+      }
+    ]
+  },
+  "reports": {
+    "directory": "artifacts/evidence/reports/",
+    "count": 10,
+    "files": [
+      {
+        "filename": "ac-playwright-results.json",
+        "src": "artifacts/ac-playwright-results.json",
+        "dst": "artifacts/evidence/reports/ac-playwright-results.json",
+        "size_bytes": 25114,
+        "mtime": "2026-03-29T06:44:22.582Z"
+      },
+      {
+        "filename": "artifact-consistency-report.json",
+        "src": "artifacts/artifact-consistency-report.json",
+        "dst": "artifacts/evidence/reports/artifact-consistency-report.json",
+        "size_bytes": 18916,
+        "mtime": "2026-03-29T08:09:00.792Z"
+      },
+      {
+        "filename": "latest-run-summary.json",
+        "src": "artifacts/latest-run-summary.json",
+        "dst": "artifacts/evidence/reports/latest-run-summary.json",
+        "size_bytes": 768,
+        "mtime": "2026-03-29T08:09:00.930Z"
+      },
+      {
+        "filename": "visual_judgment_report.json",
+        "src": "artifacts/visual_judgment_report.json",
+        "dst": "artifacts/evidence/reports/visual_judgment_report.json",
+        "size_bytes": 3882,
+        "mtime": "2026-03-29T07:14:33.571Z"
+      },
+      {
+        "filename": "visual-judgment-report.md",
+        "src": "artifacts/visual-judgment-report.md",
+        "dst": "artifacts/evidence/reports/visual-judgment-report.md",
+        "size_bytes": 17497,
+        "mtime": "2026-03-27T05:48:32.801Z"
+      },
+      {
+        "filename": "evidence_bundle.json",
+        "src": "artifacts/evidence_bundle.json",
+        "dst": "artifacts/evidence/reports/evidence_bundle.json",
+        "size_bytes": 13673,
+        "mtime": "2026-03-29T08:09:00.793Z"
+      },
+      {
+        "filename": "sse-network-log-ac8b.json",
+        "src": "artifacts/sse-network-log-ac8b.json",
+        "dst": "artifacts/evidence/reports/sse-network-log-ac8b.json",
+        "size_bytes": 8657,
+        "mtime": "2026-03-29T07:14:28.246Z"
+      },
+      {
+        "filename": "ac12-3-consistency-evidence.json",
+        "src": "artifacts/ac12-3-consistency-evidence.json",
+        "dst": "artifacts/evidence/reports/ac12-3-consistency-evidence.json",
+        "size_bytes": 2257,
+        "mtime": "2026-03-29T07:13:54.193Z"
+      },
+      {
+        "filename": "consistency_report.json",
+        "src": "artifacts/consistency_report.json",
+        "dst": "artifacts/evidence/reports/consistency_report.json",
+        "size_bytes": 13496,
+        "mtime": "2026-03-28T13:59:01.816Z"
+      },
+      {
+        "filename": "visual_checks.json",
+        "src": "artifacts/visual_checks.json",
+        "dst": "artifacts/evidence/reports/visual_checks.json",
+        "size_bytes": 4954,
+        "mtime": "2026-03-28T13:47:17.980Z"
+      }
+    ]
+  },
+  "summary": {
+    "total_files": 43,
+    "screenshots": 27,
+    "logs": 6,
+    "reports": 10
+  },
+  "overall_verdict": "PASS"
+}

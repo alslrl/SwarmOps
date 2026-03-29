@@ -1,0 +1,159 @@
+{
+  "generated_at": "2026-03-28T13:46:52.600Z",
+  "sub_ac": "8b",
+  "description": "Visual judgment checks against captured screenshots from Sub-AC 8a",
+  "screenshots_evaluated": [
+    "artifacts/screenshots/empty_state.png",
+    "artifacts/screenshots/loading_state.png",
+    "artifacts/screenshots/completed_state.png",
+    "artifacts/screenshots/error_state.png"
+  ],
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "warned": 1,
+    "pass_rate": 100
+  },
+  "verifiers": [
+    {
+      "verifier": "verifyNoRawJson",
+      "description": "No raw JSON object literals visible in any panel",
+      "results": [
+        {
+          "ui_state": "empty",
+          "status": "PASS",
+          "details": "No raw JSON detected in any panel (panel-input, panel-simulation, panel-results)"
+        },
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "No raw JSON in results panel after simulation_complete"
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "verifier": "verifyThreePanelLayout",
+      "description": "Horizontal 3-panel layout: left panel → center panel → right panel",
+      "results": [
+        {
+          "ui_state": "empty",
+          "status": "PASS",
+          "details": "Panels correctly ordered L→C→R: x=24, 360, 1056"
+        },
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "Layout maintained after simulation completes"
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "verifier": "verifyKrwFormat",
+      "description": "Monetary values formatted as ₩N,NNN KRW integers",
+      "results": [
+        {
+          "ui_state": "empty",
+          "status": "PASS",
+          "details": "Competitor prices in KRW format: ₩27,900, ₩16,120, ₩13,900"
+        },
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "Metric values populated: baseline=\"₩5,651,100\", final=\"₩6,200,000\", holdout=\"+₩548,900\""
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "verifier": "verifyButtonState",
+      "description": "btn-run enabled/disabled transitions per UI state",
+      "results": [
+        {
+          "ui_state": "empty",
+          "status": "PASS",
+          "details": "btn-run is enabled on initial load"
+        },
+        {
+          "ui_state": "loading",
+          "status": "PASS",
+          "details": "btn-run is disabled during simulation"
+        },
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "btn-run re-enabled after simulation_complete"
+        },
+        {
+          "ui_state": "error",
+          "status": "PASS",
+          "details": "btn-run re-enabled after error event"
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "verifier": "verifyDesignTokens",
+      "description": "CSS custom properties from PRD §12.2 applied correctly",
+      "results": [
+        {
+          "ui_state": "empty",
+          "status": "PASS",
+          "details": "All 15 design tokens defined with correct values"
+        },
+        {
+          "ui_state": "empty",
+          "status": "WARN",
+          "details": "body background computed as rgba(0, 0, 0, 0) — token defined but body may inherit transparent. Non-blocking warning."
+        }
+      ],
+      "overall": "PASS",
+      "note": "One WARN: body background computed transparent in headless browser context — design token --color-bg is correctly defined, CSS variable resolves correctly"
+    },
+    {
+      "verifier": "verifyDiffFormat",
+      "description": "diff-output shows before/after pairs (not raw JSON)",
+      "results": [
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "diff-output has proper before/after structure with all 3 sub-elements"
+        },
+        {
+          "ui_state": "completed",
+          "status": "PASS",
+          "details": "diff-price shows formatted values: \"가격 ₩29,900 → ₩28,900 (-3.3%)\""
+        }
+      ],
+      "overall": "PASS"
+    },
+    {
+      "verifier": "verifyErrorReadability",
+      "description": "Error state shows readable message, no stack traces",
+      "results": [
+        {
+          "ui_state": "error",
+          "status": "PASS",
+          "details": "Error message is readable: \"오류 발생 — OpenAI API 연결 오류: 일시적인 네트워크 장애가 발생했습니다.\""
+        },
+        {
+          "ui_state": "error",
+          "status": "PASS",
+          "details": "state-error: visible ✓, state-completed: hidden ✓, state-loading: hidden ✓"
+        }
+      ],
+      "overall": "PASS"
+    }
+  ],
+  "verdict": "PASS",
+  "source_report": "artifacts/visual_judgment_report.json",
+  "playwright_test_run": {
+    "tests_run": 16,
+    "passed": 15,
+    "warned": 1,
+    "failed": 0,
+    "spec_file": "tests/playwright-visual-judgment.spec.mjs"
+  }
+}

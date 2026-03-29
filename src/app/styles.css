@@ -1,0 +1,2321 @@
+/* ==========================================================
+   Seller War Game — Design Tokens & Global Styles
+   PRD §12.2 Supanova Premium Aesthetic — Vantablack Luxe
+   ========================================================== */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css');
+
+:root {
+  /* ── Colors — Vantablack Luxe ── */
+  --bg-primary: #050505;              /* OLED 블랙 */
+  --bg-secondary: #0a0a0a;
+  --bg-card-outer: rgba(255, 255, 255, 0.03);  /* Double-bezel 외부 */
+  --bg-card-inner: rgba(255, 255, 255, 0.06);  /* Double-bezel 내부 */
+  --bg-card: rgba(255, 255, 255, 0.06);        /* legacy alias */
+  --bg-input: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.08);    /* 헤어라인 보더 */
+  --border-input: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #8a8a8a;
+  --text-muted: #555555;
+
+  --accent-blue: #3b82f6;
+  --accent-blue-hover: #60a5fa;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --accent-orange: #fb923c;
+  --accent-yellow: #fbbf24;
+
+  /* Product node colors (force graph) */
+  --node-our: #3b82f6;
+  --node-comp-a: #f87171;
+  --node-comp-b: #fb923c;
+  --node-comp-c: #fbbf24;
+  --node-pass: #6b7280;
+  --node-archetype: #333333;
+
+  /* ── Typography — Pretendard (Inter 금지) ── */
+  --font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-size-xs: 0.75rem;    /* 12px - 라벨, 보조 텍스트 */
+  --font-size-sm: 0.875rem;   /* 14px - 본문, 입력 */
+  --font-size-base: 1rem;     /* 16px - 카드 제목 */
+  --font-size-lg: 1.25rem;    /* 20px - metric 값 */
+  --font-size-xl: 1.5rem;     /* 24px - 패널 제목 */
+  --font-size-2xl: 2rem;      /* 32px - 메인 타이틀 */
+
+  /* ── Spacing — 넉넉한 여백 ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* ── Card — Double-Bezel Architecture ── */
+  --card-radius: 1.5rem;                       /* 24px — outer */
+  --card-radius-outer: 1.5rem;                 /* 24px */
+  --card-radius-inner: calc(1.5rem - 6px);     /* 18px */
+  --card-padding-outer: 6px;                   /* 외부 쉘 패딩 */
+  --card-padding-inner: 20px;                  /* 내부 코어 패딩 */
+  --card-padding: 20px;                        /* legacy alias */
+  --card-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+  --card-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.08);  /* 내부 하이라이트 */
+  --card-gap: 16px;
+
+  /* ── Input ── */
+  --input-radius: 12px;
+  --input-padding: 12px 14px;
+
+  /* ── Button — Pill + Glow ── */
+  --btn-radius: 9999px;               /* 완전 둥근 pill */
+  --btn-padding: 14px 28px;
+  --btn-glow: 0 0 30px rgba(59, 130, 246, 0.25);  /* hover 시 글로우 */
+
+  /* ── Motion — Supanova Signature ── */
+  --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Layout ── */
+  --panel-left-width: 340px;
+  --panel-right-width: 380px;
+  --layout-max-width: 1440px;
+  --layout-gap: 20px;
+}
+
+/* ==========================================================
+   Reset & Base
+   ========================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  color-scheme: dark;
+  /* Radial mesh gradient orb background — Supanova signature */
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(59, 130, 246, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(52, 211, 153, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, #0a0a0a 0%, #050505 100%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, p {
+  margin-top: 0;
+}
+
+/* Korean text wrapping */
+p, span, label, textarea, input {
+  word-break: keep-all;
+}
+
+/* ==========================================================
+   3-Panel Root Layout — CSS Grid
+   340px | 1fr | 380px — fixed 100vh, no body scroll
+   ========================================================== */
+
+.app-layout {
+  display: grid;
+  grid-template-columns: var(--panel-left-width) 1fr var(--panel-right-width);
+  gap: var(--layout-gap);
+  padding: var(--space-lg);
+  height: 100vh;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.panel-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.panel-simulation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--card-gap);
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ==========================================================
+   Archetype Mixer — Compact Inline Design (PRD §12.4.1)
+   ========================================================== */
+
+.mixer-panel {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  flex-shrink: 0;
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.mixer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.mixer-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mixer-total-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: var(--accent-green);
+  font-variant-numeric: tabular-nums;
+  transition: var(--transition-fast);
+}
+
+.mixer-total-badge.invalid {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.25);
+  color: var(--accent-red);
+}
+
+.panel-results,
+.panel-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  overflow-y: auto;
+  padding-left: 4px;
+  min-height: 0;
+}
+
+/* Compact cards in activity panel */
+.panel-activity .card {
+  padding: var(--space-xs);
+}
+.panel-activity .card .card-inner,
+.panel-activity .card:not(:has(.card-inner)) {
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* ── Activity Panel slot components (PRD §12.9) ──────────────────────────────
+   .activity-slot     — generic slot in the activity panel (flex-shrink:0)
+   .activity-log-fill — live chat log fills remaining panel height (flex:1)
+   ─────────────────────────────────────────────────────────────────────────── */
+.activity-slot {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.activity-log-fill {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* agent-log inside activity panel fills all space between lobster and results */
+  max-height: none; /* override simulation-panel max-height if inherited */
+}
+
+/* Inner wrapper preserves backward compat for data-testid="panel-results" */
+.panel-results-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+}
+
+/* ── Results Popup — data-testid skeleton layout (PRD §12.10) ────────────────
+   Chart row inside the popup: revenue-chart | insights side-by-side
+   ─────────────────────────────────────────────────────────────────────────── */
+.results-popup-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--card-gap);
+  margin-top: var(--space-md);
+}
+
+.popup-revenue-chart-wrap {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-inner);
+  padding: var(--space-md);
+  min-height: 120px;
+}
+
+.popup-insights-wrap {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-inner);
+  padding: var(--space-md);
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.popup-artifact-card {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-inner);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-top: var(--space-sm);
+}
+
+/* Popup metrics row — reuse metric-card grid from results panel */
+.popup-metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+/* Popup strategy + diff 2-col grid */
+.results-popup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--card-gap);
+  margin-top: var(--space-md);
+}
+
+.popup-grid-col {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-inner);
+  padding: var(--space-md);
+}
+
+.popup-col-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Strategy summary block inside popup */
+.strategy-summary-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* Diff output block inside popup */
+.diff-output-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* ==========================================================
+   Double-Bezel Card Component
+   Outer shell → Inner core architecture
+   ========================================================== */
+
+/* Outer shell */
+.card {
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--card-padding-outer);
+  box-shadow: var(--card-shadow), var(--card-highlight);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: var(--transition-fast);
+}
+
+/* Inner core */
+.card-inner {
+  background: var(--bg-card-inner);
+  border-radius: var(--card-radius-inner);
+  padding: var(--card-padding-inner);
+  height: 100%;
+}
+
+/* Single-shell cards (legacy / compact) — inner padding directly on .card */
+.card.card-flat {
+  background: var(--bg-card-inner);
+  padding: var(--card-padding-inner);
+}
+
+/* ==========================================================
+   Eyebrow Badge — section label above titles
+   ========================================================== */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 9999px;
+  padding: 2px 10px;
+  margin-bottom: var(--space-sm);
+}
+
+/* ==========================================================
+   Form Elements
+   ========================================================== */
+
+label {
+  display: block;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+input[type="number"],
+input[type="text"],
+textarea {
+  width: 100%;
+  margin-top: var(--space-xs);
+  padding: var(--input-padding);
+  border-radius: var(--input-radius);
+  border: 1px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 56px;
+  line-height: 1.5;
+}
+
+input:disabled,
+textarea:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   Button — Pill + Glow (PRD §12.2)
+   ========================================================== */
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: var(--btn-padding);
+  border: none;
+  border-radius: var(--btn-radius);
+  background: var(--accent-blue);
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  letter-spacing: 0.02em;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-blue-hover);
+  transform: scale(1.02);
+  box-shadow: var(--btn-glow);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ==========================================================
+   Typography Utilities
+   ========================================================== */
+
+.text-xs      { font-size: var(--font-size-xs); }
+.text-sm      { font-size: var(--font-size-sm); }
+.text-base    { font-size: var(--font-size-base); }
+.text-lg      { font-size: var(--font-size-lg); }
+.text-xl      { font-size: var(--font-size-xl); }
+.text-2xl     { font-size: var(--font-size-2xl); }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-green     { color: var(--accent-green); }
+.text-red       { color: var(--accent-red); }
+
+.font-semibold { font-weight: 600; }
+.font-bold     { font-weight: 700; }
+
+/* ==========================================================
+   Section headings inside cards
+   ========================================================== */
+
+.section-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.panel-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+  line-height: 1.4;
+}
+
+.panel-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+/* ==========================================================
+   Metrics Row (Results Panel)
+   ========================================================== */
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.metric-card {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--input-radius);
+  background: var(--bg-input);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;            /* allow flex shrink */
+  overflow: hidden;
+}
+
+.metric-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.metric-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.metric-value.positive { color: var(--accent-green); }
+.metric-value.negative { color: var(--accent-red); }
+.metric-value.neutral  { color: var(--text-primary); }
+
+/* ==========================================================
+   Competitor Card (read-only row)
+   ========================================================== */
+
+.competitor-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--input-radius);
+  background: var(--bg-input);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
+}
+
+.competitor-row:last-child {
+  margin-bottom: 0;
+}
+
+.competitor-price {
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   Diff Card
+   ========================================================== */
+
+.diff-item {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--input-radius);
+  background: var(--bg-input);
+  margin-bottom: var(--space-xs);
+}
+
+.diff-item:last-child {
+  margin-bottom: 0;
+}
+
+.diff-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.diff-before {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  margin-bottom: 2px;
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.diff-after {
+  font-size: var(--font-size-xs);
+  color: var(--accent-green);
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+/* ==========================================================
+   Strategy Summary
+   ========================================================== */
+
+.strategy-row {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  align-items: flex-start;
+  font-size: var(--font-size-xs);
+}
+
+.strategy-row:last-child {
+  margin-bottom: 0;
+}
+
+.strategy-key {
+  flex: 0 0 40px;
+  color: var(--text-muted);
+  font-size: 10px;
+  padding-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.strategy-val {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+/* ==========================================================
+   Simulation Canvas Area
+   ========================================================== */
+
+.sim-canvas-wrap {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--card-radius-outer);
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+#sim-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================================
+   Sub-AC 6e: Particle Canvas Overlay Visual Polish
+   ========================================================== */
+
+/* Particle canvas — sits above SVG, pointer-events:none so SVG receives clicks */
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  display: block;
+  /* GPU compositing hint for smooth particle rendering */
+  will-change: transform;
+  /* Subtle canvas overlay: transparent background so SVG shows through */
+  background: transparent;
+}
+
+/* Seller-role indicator badge — shown when simulation is running
+   (added by JS as a sibling of particle-canvas) */
+.canvas-seller-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--node-our, #2563eb);
+  background: rgba(37, 99, 235, 0.10);
+  border: 1px solid rgba(37, 99, 235, 0.20);
+  border-radius: 4px;
+  padding: 2px 6px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.canvas-seller-badge.visible {
+  opacity: 1;
+}
+
+/* Canvas overlay: during-simulation state — subtle animated border glow */
+.sim-canvas-wrap.sim-running {
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25),
+              var(--card-shadow, 0 20px 60px -15px rgba(0, 0, 0, 0.5));
+  transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Sub-AC 6d: Frozen state — applied to sim-canvas-container after simulation_complete */
+.sim-frozen {
+  /* Subtle desaturated overlay to indicate frozen/completed state */
+  /* Canvas preserves last frame; this just dims slightly to signal no more animation */
+  filter: saturate(0.85) brightness(0.95);
+  transition: filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sim-frozen::after {
+  content: none;  /* Removed — #sim-state-completed is the canonical badge */
+}
+
+.sim-progress-bar-wrap {
+  width: 100%;
+  background: var(--bg-input);
+  border-radius: 999px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.sim-progress-bar {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0%;
+  box-shadow: 0 0 8px var(--accent-blue);
+}
+
+/* ==========================================================
+   UI State placeholders
+   ========================================================== */
+
+.state-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--space-3xl) var(--space-2xl);
+}
+
+.state-placeholder .icon {
+  font-size: 2.5rem;
+  opacity: 0.3;
+}
+
+.state-error-text {
+  color: var(--accent-red);
+  font-size: var(--font-size-sm);
+}
+
+/* ==========================================================
+   Status text
+   ========================================================== */
+
+.status-text {
+  min-height: 20px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+
+/* ==========================================================
+   Margin rate display
+   ========================================================== */
+
+.margin-display {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+
+/* ==========================================================
+   Price / Cost 2-col grid
+   ========================================================== */
+
+.price-cost-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+/* ==========================================================
+   Divider
+   ========================================================== */
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-card);
+  margin: var(--space-lg) 0;
+}
+
+/* ==========================================================
+   Archetype Weights Card (Sub-AC 4b)
+   data-testid="archetype-weights-card" / "archetype-mixer"
+   ========================================================== */
+
+/* Mixer compact grid — 4 columns, tight cells */
+.mixer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.mixer-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  transition: var(--transition-fast);
+}
+
+.mixer-cell:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.mixer-cell:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.mixer-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 32px;
+}
+
+.mixer-input {
+  width: 100%;
+  text-align: right;
+  padding: 4px 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.mixer-input::-webkit-inner-spin-button,
+.mixer-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Gender row */
+.mixer-gender {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-card);
+}
+
+.mixer-gender-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  transition: var(--transition-fast);
+}
+
+.mixer-gender-group:focus-within {
+  border-color: var(--accent-blue);
+}
+
+.mixer-gender-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.mixer-input-sm {
+  font-size: 0.75rem;
+}
+
+.mixer-gender-sep {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.mixer-gender-total {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Legacy compat — keep old classes for any JS references */
+.archetype-count-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+}
+
+.arch-count-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  cursor: default;
+}
+
+.arch-count-name {
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+}
+
+.arch-count-input {
+  width: 100%;
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  color: var(--text-primary);
+  transition: var(--transition-fast);
+  -moz-appearance: textfield;
+  font-variant-numeric: tabular-nums;
+}
+
+.arch-count-input::-webkit-inner-spin-button,
+.arch-count-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.arch-count-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+/* Agent total display */
+.agent-total-display {
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  text-align: center;
+  margin-top: var(--space-sm);
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: var(--accent-green);
+  transition: var(--transition-fast);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.agent-total-display.invalid {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.25);
+  color: var(--accent-red);
+}
+
+/* Gender row */
+.gender-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.gender-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.gender-input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 8px 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  color: var(--text-primary);
+  transition: var(--transition-fast);
+  -moz-appearance: textfield;
+  font-variant-numeric: tabular-nums;
+}
+
+.gender-input::-webkit-inner-spin-button,
+.gender-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.gender-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.gender-divider {
+  flex-shrink: 0;
+}
+
+/* ==========================================================
+   Force-Directed Graph SVG Nodes
+   ========================================================== */
+
+/* Archetype nodes (floating upper area) */
+.archetype-node {
+  cursor: default;
+}
+
+.archetype-node .arch-circle {
+  transition: fill 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              r 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.archetype-node text {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Product nodes (anchored lower row) */
+.product-node {
+  cursor: default;
+}
+
+.product-node circle {
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-node text {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Edges between archetype → chosen product */
+.sim-edge {
+  stroke-opacity: 0.6;
+  transition: stroke-opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================
+   Agent Chat Log (Sub-AC 5a)
+   data-testid="agent-log"
+   ========================================================== */
+
+.agent-log {
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--space-md);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.agent-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.agent-log-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.agent-log-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.agent-log-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agent-log-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 5px var(--space-xs);
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  transition: background 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.agent-log-entry:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Archetype color dot */
+.agent-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 3px;
+  box-shadow: 0 0 4px currentColor;
+}
+
+.agent-log-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-log-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 2px;
+}
+
+.agent-name {
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.agent-chosen-product {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.agent-chosen-product.choice-our_product {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+.agent-chosen-product.choice-competitor_a {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+.agent-chosen-product.choice-competitor_b {
+  background: rgba(251, 146, 60, 0.2);
+  color: #fb923c;
+}
+.agent-chosen-product.choice-competitor_c {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+.agent-chosen-product.choice-pass {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+.agent-reasoning {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+  word-break: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* Archetype label badge in agent log entry */
+.agent-archetype-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Timestamp display in agent log entry (Sub-AC 1) */
+.agent-log-timestamp {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+
+/* Empty log placeholder */
+.agent-log-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  padding: var(--space-xl) 0;
+}
+
+/* ==========================================================
+   Revenue Bar Chart (Sub-AC 6a)
+   data-testid="revenue-chart"
+   ========================================================== */
+
+.revenue-chart {
+  width: 100%;
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--space-md) var(--card-padding-inner);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.revenue-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.revenue-chart-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.revenue-chart-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.legend-item {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.legend-above {
+  color: var(--accent-green);
+}
+
+.legend-below {
+  color: var(--accent-red);
+}
+
+.revenue-chart-body {
+  width: 100%;
+  height: 120px;
+  position: relative;
+}
+
+.revenue-chart-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* SVG element classes set via JS — PRD §12.6 */
+/* Bar fill: accent-blue; green/red stroke border indicates above/below baseline */
+.revenue-bar {
+  fill: var(--accent-blue);
+  transition: fill 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              stroke 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revenue-bar.above-baseline {
+  stroke: var(--accent-green);
+  stroke-width: 2;
+}
+
+.revenue-bar.below-baseline {
+  stroke: var(--accent-red);
+  stroke-width: 2;
+}
+
+.revenue-baseline-line {
+  pointer-events: none;
+}
+
+.revenue-bar-label {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Revenue chart axes */
+.revenue-chart-axis text {
+  fill: var(--text-muted);
+  font-size: 9px;
+  font-family: 'Pretendard Variable', system-ui, sans-serif;
+  user-select: none;
+  pointer-events: none;
+}
+
+.revenue-chart-axis line {
+  stroke: var(--border-card);
+  stroke-width: 1;
+}
+
+/* Subtle grid lines */
+.revenue-chart-grid line {
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+/* Hover tooltip for revenue chart bars */
+.revenue-chart-tooltip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  line-height: 1.5;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.revenue-chart-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover state: brighten bar */
+.revenue-bar:hover {
+  filter: brightness(1.25);
+  cursor: crosshair;
+}
+
+/* ==========================================================
+   Agent Profile Popup — Sub-AC 5b
+   data-testid="agent-profile"
+   ========================================================== */
+
+/* Full-screen overlay */
+.agent-profile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Semi-transparent backdrop */
+.agent-profile-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Dialog card */
+.agent-profile-dialog {
+  position: relative;
+  z-index: 1;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--card-padding-inner);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  animation: profile-pop-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes profile-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header row: identity (dot + name/archetype) + close button */
+.agent-profile-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.agent-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+/* Larger dot in the header */
+.agent-profile-dot {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.agent-profile-name {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-profile-archetype-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* X close button */
+.agent-profile-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: var(--transition-fast);
+  font-family: var(--font-family);
+}
+
+.agent-profile-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Stat bars section */
+.agent-profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.stat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.stat-label {
+  flex: 0 0 72px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stat-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stat-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0%;
+}
+
+/* Per-stat colors */
+.stat-bar-price { background: #38bdf8; }   /* sky-400 — price sensitivity */
+.stat-bar-trust { background: #a78bfa; }   /* violet-400 — trust */
+.stat-bar-promo { background: #f87171; }   /* red-400 — promo affinity */
+.stat-bar-brand { background: #fbbf24; }   /* amber-400 — brand bias */
+.stat-bar-pass  { background: #6b7280; }   /* gray-500 — pass threshold */
+
+.stat-val {
+  flex: 0 0 28px;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Choice badge row */
+.agent-profile-choice-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.agent-profile-choice-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  flex: 0 0 60px;
+}
+
+/* Reasoning section */
+.agent-profile-reasoning {
+  border-top: 1px solid var(--border-card);
+  padding-top: var(--space-md);
+}
+
+.agent-profile-reasoning-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-xs);
+}
+
+.agent-profile-reasoning-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Clickable log entries show pointer cursor */
+.agent-log-entry.clickable {
+  cursor: pointer;
+}
+
+/* ==========================================================
+   Agent Count Display — Sub-AC 4c
+   data-testid="agent-count"
+   ========================================================== */
+
+.agent-count-display {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ==========================================================
+   Product Counter Overlays — Sub-AC 4c
+   data-testid="product-counter-{id}"
+   SVG <text> elements inside each product-node <g>.
+   ========================================================== */
+
+.product-counter {
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.01em;
+  display: none;  /* Hidden — bucket panel is the canonical counter display */
+}
+
+/* ==========================================================
+   Archetype Summary Table — Sub-AC 4c
+   data-testid="archetype-summary-table"
+   ========================================================== */
+
+.archetype-summary {
+  width: 100%;
+  background: var(--bg-card-outer);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  padding: var(--space-md) var(--card-padding-inner);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.archetype-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.archetype-summary-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.archetype-summary-iteration {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.archetype-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.archetype-summary-table thead th {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border-card);
+  white-space: nowrap;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.archetype-summary-table thead th:first-child {
+  text-align: left;
+}
+
+.archetype-summary-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.archetype-summary-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.archetype-summary-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.archetype-summary-table tbody td {
+  padding: 4px var(--space-sm);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.archetype-summary-table tbody td:first-child {
+  text-align: left;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.archetype-summary-table .cell-our {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+/* Sub-AC 6d: per-archetype choice percentage highlighting */
+.archetype-summary-table .cell-our-best {
+  color: var(--accent-green) !important;
+  font-weight: 700;
+}
+
+.archetype-summary-table .cell-our-worst {
+  color: var(--accent-red) !important;
+}
+
+.archetype-summary-table .cell-total {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.archetype-summary-table .cell-pct {
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
+.archetype-summary-table tfoot td {
+  padding: 5px var(--space-sm);
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-card);
+  font-variant-numeric: tabular-nums;
+}
+
+.archetype-summary-table tfoot td:first-child {
+  text-align: left;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================
+   Insights Panel (Sub-AC 6b)
+   data-testid="insights-panel"
+   ========================================================== */
+
+.insights-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--input-radius);
+  background: var(--bg-input);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.insight-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.insight-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.insight-archetype {
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.insight-text {
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+.insight-action {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: 4px;
+  opacity: 0.75;
+  word-break: break-word;
+}
+
+/* Icon-specific left border accent */
+.insight-item.insight-warn {
+  border-left: 3px solid var(--accent-red);
+}
+
+.insight-item.insight-good {
+  border-left: 3px solid var(--accent-green);
+}
+
+.insight-item.insight-caution {
+  border-left: 3px solid var(--accent-yellow);
+}
+
+/* ==========================================================
+   Scroll Entry Animations — IntersectionObserver (PRD §12.2 rule 7)
+   Elements start hidden; JS adds .is-visible via IntersectionObserver
+   ========================================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0ms;   opacity: 1; transform: none; }
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 60ms;  opacity: 1; transform: none; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 120ms; opacity: 1; transform: none; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 180ms; opacity: 1; transform: none; }
+.reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 240ms; opacity: 1; transform: none; }
+
+/* ==========================================================
+   Scrollbar (webkit)
+   ========================================================== */
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ==========================================================
+   btn-secondary (Sub-AC 4d — btn-show-results)
+   ========================================================== */
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--btn-radius);
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--accent-blue);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  letter-spacing: 0.02em;
+}
+.btn-secondary:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: scale(1.01);
+}
+
+/* ==========================================================
+   Strategy Lobster Panel (PRD §12.11 + §16 — Sub-AC 4d)
+   ========================================================== */
+
+.strategy-lobster {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.strategy-lobster-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.strategy-lobster-emoji {
+  font-size: 1.1rem;
+}
+
+.strategy-candidates-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.strategy-candidate-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: var(--input-radius);
+  transition: var(--transition-fast);
+  cursor: default;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.strategy-candidate-card.candidate-winner-active {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+.candidate-num {
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+.candidate-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.candidate-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 100%;
+}
+
+.candidate-price {
+  margin-top: 1px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.candidate-rationale {
+  margin-top: 2px;
+  opacity: 0.7;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 10px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.candidate-winner {
+  font-size: 0.875rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.strategy-lobster-rationale {
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid var(--accent-blue);
+  border-radius: 0 var(--input-radius) var(--input-radius) 0;
+  line-height: 1.5;
+  word-break: keep-all;
+  font-size: 11px;
+  max-height: 4.5em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* ==========================================================
+   Results Popup Modal (PRD §12.10 + §16 — Sub-AC 4d)
+   ========================================================== */
+
+.results-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.results-popup-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.results-popup-dialog {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+  border-radius: var(--card-radius-outer);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(20px);
+  width: min(90vw, 860px);
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: popupSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes popupSlideIn {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.results-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-card);
+  position: sticky;
+  top: 0;
+  background: var(--bg-card-inner);
+  backdrop-filter: blur(20px);
+  z-index: 2;
+}
+
+.results-popup-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.results-popup-close {
+  background: none;
+  border: 1px solid var(--border-input);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition-fast);
+  font-family: var(--font-family);
+}
+.results-popup-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.results-popup-body {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.popup-metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.popup-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  background: var(--bg-input);
+  border-radius: var(--input-radius);
+  border: 1px solid var(--border-input);
+}
+
+.popup-metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.popup-metric-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.popup-grid-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--bg-input);
+  border-radius: var(--input-radius);
+  border: 1px solid var(--border-input);
+  flex: 1;
+}
+
+.results-popup-grid {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.popup-col-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.popup-grid-row {
+  display: flex;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+}
+
+.popup-key {
+  color: var(--text-muted);
+  min-width: 40px;
+  flex-shrink: 0;
+}
+
+.popup-val {
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.diff-after-text {
+  color: var(--accent-green);
+}
+
+.results-popup-artifact {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-align: right;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-card);
+}
+
+/* ==========================================================
+   Profile Popup Extra Fields (PRD §16 — Sub-AC 4d)
+   ========================================================== */
+
+.agent-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-card);
+}
+
+.agent-profile-meta-item {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.agent-profile-bio {
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+/* ==========================================================
+   Supanova Polish — Noise texture, enhanced glass, micro-fixes
+   ========================================================== */
+
+/* Subtle grain noise overlay for organic feel */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Heading text balance for Korean */
+h1, h2, h3, .section-title, .panel-title {
+  text-wrap: balance;
+}
+
+/* Enhanced glass border glow on cards in activity panel */
+.panel-activity .card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Right panel metric-value responsive: shrink on overflow */
+.panel-activity .metric-value {
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+}
+
+/* Agent log tighter spacing */
+.panel-activity .agent-log {
+  max-height: 240px;
+  gap: 0;
+}
+
+/* Strategy lobster compact */
+.strategy-lobster {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Smooth scroll on panels */
+.panel-input,
+.panel-simulation,
+.panel-activity {
+  scroll-behavior: smooth;
+}
+
+/* Input panel compact labels */
+.panel-input label {
+  margin-bottom: var(--space-sm);
+}
+
+/* KRW price formatting — ensure tabular nums everywhere */
+[data-testid*="metric-"],
+[data-testid*="revenue-"],
+.competitor-price,
+.candidate-price {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-03-29T07:14:26.873Z",
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
+    "warned": 0,
+    "pass_rate": 100
+  },
+  "checks": [
+    {
+      "check": "verifyNoRawJson",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "No raw JSON detected in any panel",
+      "timestamp": "2026-03-29T07:14:27.783Z"
+    },
+    {
+      "check": "verifyNoRawJson",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "No raw JSON in results panel after simulation_complete",
+      "timestamp": "2026-03-29T07:14:28.305Z"
+    },
+    {
+      "check": "verifyThreePanelLayout",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "Panels correctly ordered L→C→R: x=16, 376, 1048",
+      "timestamp": "2026-03-29T07:14:28.697Z"
+    },
+    {
+      "check": "verifyThreePanelLayout",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "Layout maintained after simulation completes",
+      "timestamp": "2026-03-29T07:14:29.243Z"
+    },
+    {
+      "check": "verifyKrwFormat",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "Competitor prices in KRW format: ₩27,900, ₩16,120, ₩13,900",
+      "timestamp": "2026-03-29T07:14:29.619Z"
+    },
+    {
+      "check": "verifyKrwFormat",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "Metric values populated: baseline=\"₩5,651,100\", final=\"₩6,200,000\", holdout=\"+₩548,900\"",
+      "timestamp": "2026-03-29T07:14:29.987Z"
+    },
+    {
+      "check": "verifyButtonState",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "btn-run is enabled on initial load",
+      "timestamp": "2026-03-29T07:14:30.333Z"
+    },
+    {
+      "check": "verifyButtonState",
+      "ui_state": "loading",
+      "status": "PASS",
+      "details": "btn-run is disabled during simulation",
+      "timestamp": "2026-03-29T07:14:30.714Z"
+    },
+    {
+      "check": "verifyButtonState",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "btn-run re-enabled after simulation_complete",
+      "timestamp": "2026-03-29T07:14:31.274Z"
+    },
+    {
+      "check": "verifyButtonState",
+      "ui_state": "error",
+      "status": "PASS",
+      "details": "btn-run re-enabled after error event",
+      "timestamp": "2026-03-29T07:14:31.668Z"
+    },
+    {
+      "check": "verifyDesignTokens",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "All 15 design tokens defined with correct values",
+      "timestamp": "2026-03-29T07:14:31.918Z"
+    },
+    {
+      "check": "verifyDesignTokens",
+      "ui_state": "empty",
+      "status": "PASS",
+      "details": "body background: rgb(5,5,5) — dark ✓",
+      "timestamp": "2026-03-29T07:14:32.251Z"
+    },
+    {
+      "check": "verifyDiffFormat",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "diff-output has proper before/after structure with all 3 sub-elements",
+      "timestamp": "2026-03-29T07:14:32.570Z"
+    },
+    {
+      "check": "verifyDiffFormat",
+      "ui_state": "completed",
+      "status": "PASS",
+      "details": "diff-price shows formatted values: \"가격\n              ₩29,900\n              ₩28,900 (-3.3%)\"",
+      "timestamp": "2026-03-29T07:14:32.885Z"
+    },
+    {
+      "check": "verifyErrorReadability",
+      "ui_state": "error",
+      "status": "PASS",
+      "details": "Error message is readable: \"오류 발생\n            OpenAI API 연결 오류: 일시적인 네트워크 장애가 발생했습니다.\"",
+      "timestamp": "2026-03-29T07:14:33.269Z"
+    },
+    {
+      "check": "verifyErrorReadability",
+      "ui_state": "error",
+      "status": "PASS",
+      "details": "state-error: visible ✓, state-completed: hidden ✓, state-loading: hidden ✓",
+      "timestamp": "2026-03-29T07:14:33.564Z"
+    }
+  ],
+  "verdict": "PASS"
+}

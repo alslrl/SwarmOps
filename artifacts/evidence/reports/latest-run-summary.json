@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-03-29T08:09:00.869Z",
+  "sampler_seed": 4242,
+  "selected_strategy_id": "strategy_1",
+  "baseline_revenue": 4784000,
+  "final_revenue": 4652900,
+  "holdout_uplift": -37000,
+  "rejected_strategies": [],
+  "diff": {
+    "title": {
+      "before": "트리클리닉 엑스퍼트 스칼프 탈모 샴푸 500ml",
+      "after": "트리클리닉 엑스퍼트 스칼프 사이언스 탈모 샴푸 500ml"
+    },
+    "top_copy": {
+      "before": "두피과학 기반의 성분 설계로 매일 신뢰감 있게 관리하는 프리미엄 탈모 샴푸",
+      "after": "전문가 관점의 두피과학 설계로 매일 균형 있게 관리하는 프리미엄 탈모 샴푸"
+    },
+    "price": {
+      "before": 29900,
+      "after": 28900
+    }
+  }
+}

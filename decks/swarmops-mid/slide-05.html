@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<base href="/slides/">
+<script>
+(() => {
+  const slideFile = "slide-05.html";
+  const localAssetPrefix = "./assets/";
+  const absolutePathRe = /^(file:\/\/|\/Users\/|\/home\/|\/var\/|\/tmp\/|\/private\/|\/Volumes\/|[A-Za-z]:[\\/]|\\\\)/i;
+  const prefix = '[slides-grab:image]';
+
+  function describeElement(element) {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) return '';
+    if (element === document.body) return 'body';
+
+    const parts = [];
+    let current = element;
+    while (current && current.nodeType === Node.ELEMENT_NODE && current !== document.body) {
+      let part = current.tagName.toLowerCase();
+      if (current.id) {
+        part += '#' + current.id;
+        parts.unshift(part);
+        break;
+      }
+      if (current.classList.length > 0) {
+        part += '.' + Array.from(current.classList).slice(0, 2).join('.');
+      }
+      parts.unshift(part);
+      current = current.parentElement;
+    }
+    return 'body > ' + parts.join(' > ');
+  }
+
+  function warn(message, detail) {
+    console.warn(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  function fail(message, detail) {
+    console.error(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  window.addEventListener('error', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement)) return;
+    const src = (target.getAttribute('src') || target.currentSrc || '').trim();
+    if (!src || src.startsWith('data:')) return;
+    if (src.startsWith(localAssetPrefix)) {
+      fail('missing local asset', { src });
+      return;
+    }
+    fail('image failed to load', { src });
+  }, true);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    for (const image of document.querySelectorAll('img[src]')) {
+      const src = (image.getAttribute('src') || '').trim();
+      if (!src || src.startsWith('data:')) continue;
+      if (src.startsWith('https://')) {
+        fail('remote image URL is unsupported in saved slides; download it into ./assets/<file>', { src });
+        continue;
+      }
+      if (src.startsWith('http://')) {
+        fail('remote http:// image URL is unsupported in saved slides; download it into ./assets/<file>', { src });
+        continue;
+      }
+      if (absolutePathRe.test(src) || src.startsWith('/')) {
+        fail('non-portable image path is unsupported', { src });
+        continue;
+      }
+      if (!src.startsWith(localAssetPrefix)) {
+        warn('noncanonical local image path should use ./assets/<file>', { src });
+      }
+    }
+
+    for (const element of document.body.querySelectorAll('*')) {
+      if (element === document.body) continue;
+      const backgroundImage = window.getComputedStyle(element).backgroundImage;
+      if (!backgroundImage || backgroundImage === 'none' || !backgroundImage.includes('url(')) continue;
+      fail('non-body background-image is not supported for slide content', {
+        element: describeElement(element),
+        backgroundImage,
+      });
+    }
+  });
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=720,height=405">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:720pt;height:405pt;font-family:'Pretendard',sans-serif;background:#0a0a0a;color:#f5f5f5;display:flex;flex-direction:column;justify-content:center;overflow:hidden;padding:44px 64px}
+.label{display:inline-block;margin-bottom:14px}
+.label p{font-size:11px;font-weight:600;color:#3b82f6;letter-spacing:1.5px;text-transform:uppercase}
+h1{font-size:26px;font-weight:700;line-height:1.3;letter-spacing:-0.3px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:#141414;border:1px solid #262626;border-radius:10px;padding:18px 20px}
+.card h2{font-size:13px;font-weight:600;color:#f5f5f5;margin-bottom:6px}
+.card p{font-size:11.5px;color:#a3a3a3;line-height:1.55}
+.card p strong{color:#d4d4d4}
+.bottom{display:flex;gap:16px}
+.tag{background:#141414;border:1px solid #262626;border-radius:8px;padding:12px 16px;flex:1;text-align:center}
+.tag h2{font-size:11px;font-weight:600;color:#737373;margin-bottom:4px;letter-spacing:0.5px}
+.tag p{font-size:13px;font-weight:600;color:#f5f5f5}
+.tag p span{color:#3b82f6}
+</style>
+</head>
+<body>
+<div class="label"><p>RALPH SETUP</p></div>
+<h1>Ouroboros 루프로 1인 5시간 빌드</h1>
+<div class="grid">
+  <div class="card">
+    <h2>빌드 루프</h2>
+    <p>PRD 작성 → <strong>Seed 생성</strong> → Test Spec 자동 도출 → 빌드 → 검증 → 진화<br>Claude Code + Ouroboros로 <strong>자동 반복</strong></p>
+  </div>
+  <div class="card">
+    <h2>AI 활용</h2>
+    <p><strong>gpt-5.4</strong> — 전략 후보 생성 + 상인 관점 현실성 판단<br><strong>gpt-5-nano</strong> — 800개 에이전트 개별 구매 평가 (병렬 200+)</p>
+  </div>
+  <div class="card">
+    <h2>핵심 역량</h2>
+    <p>Seed 기반 <strong>자동 빌드/검증 루프</strong>로 단독 개발 가속<br>8개 검증 게이트를 통과해야 다음 단계로 진행</p>
+  </div>
+  <div class="card">
+    <h2>기술 스택</h2>
+    <p><strong>Node.js ESM</strong> · Vanilla HTML/CSS/JS · OpenAI API<br>SSE 실시간 스트리밍 · Canvas 2D 파티클 · Playwright E2E</p>
+  </div>
+</div>
+<div class="bottom">
+  <div class="tag">
+    <h2>AGENTS</h2>
+    <p><span>800</span> + 200 홀드아웃</p>
+  </div>
+  <div class="tag">
+    <h2>ARCHETYPES</h2>
+    <p><span>8</span>개 한국 소비자 유형</p>
+  </div>
+  <div class="tag">
+    <h2>BUILD</h2>
+    <p>4시간 랄프 루프를 이용하여 빌드</p>
+  </div>
+</div>
+
+
+</body></html>

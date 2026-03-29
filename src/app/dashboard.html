@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SwarmOps — Seller War Game</title>
+    <!-- Pretendard Variable font — loaded by styles.css @import -->
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      /* ==========================================================
+         Design Token Overrides — PRD §12.2 Supanova Premium Aesthetic
+         Vantablack Luxe — OLED black, glass cards, cinematic depth
+         ========================================================== */
+      :root {
+        /* ── Colors — Vantablack Luxe ── */
+        --bg-primary: #050505;
+        --bg-secondary: #0a0a0a;
+        --bg-card-outer: rgba(255, 255, 255, 0.03);
+        --bg-card-inner: rgba(255, 255, 255, 0.06);
+        --bg-card: rgba(255, 255, 255, 0.06);
+        --bg-input: rgba(255, 255, 255, 0.08);
+        --border-card: rgba(255, 255, 255, 0.08);
+        --border-input: rgba(255, 255, 255, 0.12);
+
+        --text-primary: #f0f0f0;
+        --text-secondary: #8a8a8a;
+        --text-muted: #555555;
+
+        --accent-blue: #3b82f6;
+        --accent-blue-hover: #60a5fa;
+        --accent-green: #34d399;
+        --accent-red: #f87171;
+        --accent-orange: #fb923c;
+        --accent-yellow: #fbbf24;
+
+        /* Product node colors — PRD §12.2 / Sub-AC 6c spec */
+        --node-our: #2563eb;
+        --node-comp-a: #dc2626;
+        --node-comp-b: #ea580c;
+        --node-comp-c: #ca8a04;
+        --node-pass: #6b7280;
+        --node-archetype: #1a1a1a;
+
+        /* ── Typography — Pretendard Variable ── */
+        --font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+        /* ── Card — Double-Bezel ── */
+        --card-radius: 1.5rem;
+        --card-radius-outer: 1.5rem;
+        --card-radius-inner: calc(1.5rem - 6px);
+        --card-padding-outer: 6px;
+        --card-padding-inner: 20px;
+        --card-padding: 20px;
+        --card-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+        --card-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        --card-gap: 16px;
+
+        /* ── Button — Pill + Glow ── */
+        --btn-radius: 9999px;
+        --btn-padding: 14px 28px;
+        --btn-glow: 0 0 30px rgba(59, 130, 246, 0.25);
+
+        /* ── Motion — Supanova Signature ── */
+        --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        --transition-fast: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        /* ── Layout ── */
+        --panel-left-width: 340px;
+        --panel-right-width: 380px;
+        --layout-max-width: 1440px;
+        --layout-gap: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============================================================
+         Root 3-Panel Layout Shell
+         Left: panel-input (340px fixed)
+         Center: panel-simulation (flex, centered)
+         Right: panel-activity (380px fixed)
+         ============================================================ -->
+    <main class="app-layout">
+
+      <!-- ── LEFT: Input Panel ──────────────────────────────────── -->
+      <aside
+        class="panel-input"
+        data-testid="panel-input"
+      >
+        <!-- ── Product Card ─────────────────────────────────────── -->
+        <div class="card reveal" data-testid="product-card">
+          <!-- Read-only product identity (populated by JS from /api/fixtures) -->
+          <p class="text-xs text-muted" style="margin-bottom:var(--space-xs); text-align:center" data-testid="product-brand">SwarmOps</p>
+          <p class="text-base font-semibold" style="margin-bottom:var(--space-lg); text-align:center" data-testid="product-name">SwarmOps</p>
+
+          <hr class="divider" style="margin-top:0" />
+
+          <!-- Title -->
+          <label>
+            <span class="text-xs text-secondary">제목</span>
+            <textarea
+              data-testid="input-title"
+              rows="3"
+              placeholder="상품 제목을 입력하세요"
+              style="margin-top:var(--space-xs)"
+            ></textarea>
+          </label>
+
+          <!-- Top copy -->
+          <label style="margin-top:var(--space-sm)">
+            <span class="text-xs text-secondary">카피</span>
+            <textarea
+              data-testid="input-top-copy"
+              rows="3"
+              placeholder="상단 카피를 입력하세요"
+              style="margin-top:var(--space-xs)"
+            ></textarea>
+          </label>
+
+          <!-- Price / Cost 2-col grid -->
+          <div class="price-cost-grid" style="margin-top:var(--space-sm)">
+            <label>
+              <span class="text-xs text-secondary">가격 (₩)</span>
+              <input
+                type="number"
+                data-testid="input-price"
+                min="0"
+                step="100"
+                placeholder="29900"
+              />
+            </label>
+            <label>
+              <span class="text-xs text-secondary">원가 (₩)</span>
+              <input
+                type="number"
+                data-testid="input-cost"
+                min="0"
+                step="100"
+                placeholder="11000"
+              />
+            </label>
+          </div>
+
+          <!-- Margin rate (auto-computed, read-only) -->
+          <!-- data-testid="margin-display" for Sub-AC 4d §16 testability -->
+          <p class="margin-display" id="margin-display" data-testid="margin-display">마진율: <span id="margin-rate-value" data-testid="margin-rate">—</span></p>
+        </div>
+
+        <!-- ── Competitors Card ──────────────────────────────────── -->
+        <div class="card reveal" data-testid="competitors-card">
+          <p class="section-title">경쟁사</p>
+
+          <!-- competitor_a (populated by JS) -->
+          <div class="competitor-row" data-testid="competitor-a">
+            <span class="comp-name text-sm text-secondary" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">로딩 중…</span>
+            <span class="competitor-price">—</span>
+          </div>
+
+          <!-- competitor_b (populated by JS) -->
+          <div class="competitor-row" data-testid="competitor-b">
+            <span class="comp-name text-sm text-secondary" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">로딩 중…</span>
+            <span class="competitor-price">—</span>
+          </div>
+
+          <!-- competitor_c (populated by JS) -->
+          <div class="competitor-row" data-testid="competitor-c">
+            <span class="comp-name text-sm text-secondary" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">로딩 중…</span>
+            <span class="competitor-price">—</span>
+          </div>
+        </div>
+
+        <!-- ── Settings Card ─────────────────────────────────────── -->
+        <div class="card reveal" data-testid="settings-card">
+          <p class="section-title">시뮬레이션 설정</p>
+
+          <label>
+            <span class="text-xs text-secondary">Iteration count</span>
+            <input
+              type="number"
+              data-testid="input-iteration-count"
+              id="iterationCount"
+              min="1"
+              max="10"
+              value="5"
+            />
+          </label>
+
+          <label style="margin-top:var(--space-sm)">
+            <span class="text-xs text-secondary">Minimum margin floor</span>
+            <input
+              type="number"
+              data-testid="input-margin-floor"
+              id="marginFloor"
+              min="0.10"
+              max="0.90"
+              step="0.01"
+              value="0.35"
+            />
+          </label>
+        </div>
+
+        <!-- ── Archetype Weights Card (hidden — controls are in Simulation Panel) ── -->
+        <div data-testid="archetype-weights-card" id="archetypeWeightsCard" style="display:none"></div>
+
+        <!-- ── Run Controls ──────────────────────────────────────── -->
+        <button
+          class="btn-primary"
+          data-testid="btn-run"
+          id="runButton"
+          type="button"
+        >
+          ▶ Run simulation
+        </button>
+
+        <p class="status-text" data-testid="status-text" id="status">시뮬레이션 실행 준비 완료</p>
+
+        <!-- Re-open results popup after dismissal (PRD §12.10 + §16) -->
+        <button
+          data-testid="btn-show-results"
+          id="btnShowResults"
+          class="btn-secondary"
+          type="button"
+          style="display:none;width:100%;margin-top:var(--space-sm)"
+        >📊 결과 보기</button>
+      </aside>
+
+      <!-- ── CENTER: Simulation Panel ──────────────────────────── -->
+      <section
+        class="panel-simulation"
+        data-testid="panel-simulation"
+      >
+        <!-- Panel header -->
+        <div style="width:100%">
+          <h2 class="panel-title" style="margin-bottom:var(--space-xs)">시뮬레이션</h2>
+          <p class="panel-subtitle">Buyer agent decision visualization</p>
+        </div>
+
+        <!-- Strategy Lobster moved to Activity Panel per PRD §12.9 + §16 note "→ Activity Panel로 이동" -->
+
+        <!-- SVG canvas wrapper — force-directed graph always rendered here -->
+        <div id="sim-canvas-wrap" class="sim-canvas-wrap" style="flex:1;min-height:360px;width:100%;position:relative">
+
+          <!-- SVG force-directed graph (per PRD §12.3 — Canvas 2D or SVG, vanilla JS) -->
+          <svg
+            id="sim-canvas"
+            data-testid="sim-canvas"
+            xmlns="http://www.w3.org/2000/svg"
+            style="position:absolute;inset:0;width:100%;height:100%;display:block"
+          >
+            <!-- Edge layer — populated by JS on archetype_evaluated events -->
+            <g id="sim-edges"></g>
+
+            <!-- Particle flow indicator — Sub-AC 6b.
+                 Hidden (display:none) at page load; shown on iteration_start
+                 so 🦞 is queryable in the SVG DOM during loading/running state. -->
+            <text
+              id="sim-lobster-indicator"
+              data-testid="sim-lobster-indicator"
+              x="8" y="20"
+              fill="rgba(255,255,255,0.55)"
+              font-size="13"
+              font-family="sans-serif"
+              style="display:none"
+              aria-hidden="true"
+            >🦞</text>
+
+            <!-- ── Product nodes (5) — fixed at bottom row ── -->
+            <g id="sim-product-nodes">
+              <g data-testid="product-node-our_product"      class="product-node" data-product-id="our_product">
+                <circle r="28" fill="#2563eb" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                <text y="5"  text-anchor="middle" fill="#fff" font-size="8" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">트리클리닉</text>
+                <!-- Counter overlay — Sub-AC 4c -->
+                <text class="product-counter" data-svg-counter-id="our_product" y="-38" text-anchor="middle" fill="#93c5fd" font-size="11" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">0</text>
+              </g>
+              <g data-testid="product-node-competitor_a"     class="product-node" data-product-id="competitor_a">
+                <circle r="24" fill="#dc2626" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                <text y="5"  text-anchor="middle" fill="#fff" font-size="8" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">경쟁A</text>
+                <!-- Counter overlay — Sub-AC 4c -->
+                <text class="product-counter" data-svg-counter-id="competitor_a" y="-34" text-anchor="middle" fill="#fca5a5" font-size="11" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">0</text>
+              </g>
+              <g data-testid="product-node-competitor_b"     class="product-node" data-product-id="competitor_b">
+                <circle r="24" fill="#ea580c" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                <text y="5"  text-anchor="middle" fill="#fff" font-size="8" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">경쟁B</text>
+                <!-- Counter overlay — Sub-AC 4c -->
+                <text class="product-counter" data-svg-counter-id="competitor_b" y="-34" text-anchor="middle" fill="#fdba74" font-size="11" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">0</text>
+              </g>
+              <g data-testid="product-node-competitor_c"     class="product-node" data-product-id="competitor_c">
+                <circle r="24" fill="#ca8a04" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+                <text y="5"  text-anchor="middle" fill="#fff" font-size="8" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">경쟁C</text>
+                <!-- Counter overlay — Sub-AC 4c -->
+                <text class="product-counter" data-svg-counter-id="competitor_c" y="-34" text-anchor="middle" fill="#fde68a" font-size="11" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">0</text>
+              </g>
+              <g data-testid="product-node-pass"             class="product-node" data-product-id="pass">
+                <circle r="20" fill="#6b7280" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+                <text y="5"  text-anchor="middle" fill="#fff" font-size="8" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">패스</text>
+                <!-- Counter overlay — Sub-AC 4c -->
+                <text class="product-counter" data-svg-counter-id="pass" y="-30" text-anchor="middle" fill="#d1d5db" font-size="11" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="700">0</text>
+              </g>
+            </g>
+
+            <!-- ── Archetype nodes (8) — force-directed floating above product row ── -->
+            <g id="sim-archetype-nodes">
+              <g data-testid="archetype-price_sensitive"       class="archetype-node" data-archetype-id="price_sensitive"       data-weight="18">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">가격민감</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">18%</text>
+              </g>
+              <g data-testid="archetype-value_seeker"          class="archetype-node" data-archetype-id="value_seeker"          data-weight="16">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">가성비</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">16%</text>
+              </g>
+              <g data-testid="archetype-premium_quality"       class="archetype-node" data-archetype-id="premium_quality"       data-weight="12">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">프리미엄</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">12%</text>
+              </g>
+              <g data-testid="archetype-trust_first"           class="archetype-node" data-archetype-id="trust_first"           data-weight="15">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">신뢰우선</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">15%</text>
+              </g>
+              <g data-testid="archetype-aesthetics_first"      class="archetype-node" data-archetype-id="aesthetics_first"      data-weight="8">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">감성</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">8%</text>
+              </g>
+              <g data-testid="archetype-urgency_buyer"         class="archetype-node" data-archetype-id="urgency_buyer"         data-weight="11">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">문제해결</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">11%</text>
+              </g>
+              <g data-testid="archetype-promo_hunter"          class="archetype-node" data-archetype-id="promo_hunter"          data-weight="10">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">할인반응</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">10%</text>
+              </g>
+              <g data-testid="archetype-gift_or_family_buyer"  class="archetype-node" data-archetype-id="gift_or_family_buyer"  data-weight="10">
+                <circle class="arch-circle" r="16" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+                <text y="-2" text-anchor="middle" fill="#f0f0f0" font-size="7" font-family="Pretendard Variable,system-ui,sans-serif" font-weight="600">가족구매</text>
+                <text y="8" text-anchor="middle" fill="#555555" font-size="6" font-family="Pretendard Variable,system-ui,sans-serif">10%</text>
+              </g>
+            </g>
+
+            <!-- ── Emoji particle layer — 🦞 particles flow from left to product buckets ── -->
+            <!-- Sub-AC 6b: SVG text elements here so Playwright can detect 🦞 via textContent -->
+            <g id="sim-emoji-particles"></g>
+          </svg>
+
+          <!-- Particle canvas overlay — Canvas 2D particle engine, z-index above SVG -->
+          <!-- pointer-events:none lets mouse events pass through to SVG nodes behind it -->
+          <canvas
+            id="particle-canvas"
+            data-testid="particle-canvas"
+            style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;display:block"
+          ></canvas>
+
+          <!-- Sub-AC 6e: Seller-role badge — shown during simulation run -->
+          <!-- Indicates that the "seller" role (our product) is being tracked -->
+          <div
+            id="canvas-seller-badge"
+            class="canvas-seller-badge"
+            data-testid="canvas-seller-badge"
+            aria-hidden="true"
+          >트리클리닉 추적중</div>
+
+          <!-- ── Product Bucket Zones (Sub-AC 6c) — right side overlay ─────────── -->
+          <!-- Shown during and after simulation. 5 vertical zones with colors, names, counts, bars. -->
+          <!-- pointer-events:none so SVG/canvas behind it is still interactive -->
+          <div
+            id="product-bucket-panel"
+            data-testid="product-bucket-panel"
+            style="display:flex;position:absolute;right:0;top:0;bottom:0;width:140px;
+                   background:rgba(5,5,5,0.78);backdrop-filter:blur(12px);
+                   border-left:1px solid rgba(255,255,255,0.07);
+                   flex-direction:column;justify-content:center;
+                   gap:2px;padding:6px 0;z-index:3;pointer-events:none"
+          >
+            <!-- our_product bucket — Sub-AC 6c: right-side bucket zone -->
+            <div class="product-bucket-zone" data-bucket-id="our_product"
+                 style="display:flex;align-items:center;gap:8px;padding:5px 12px">
+              <div style="width:4px;height:32px;background:#2563eb;border-radius:2px;flex-shrink:0"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:9px;color:#8a8a8a;font-family:Pretendard Variable,system-ui,sans-serif">트리클리닉</div>
+                <div id="bucket-count-our_product"
+                     data-testid="product-counter-our_product"
+                     class="bucket-count-display"
+                     style="font-size:13px;font-weight:700;color:#93c5fd;font-family:Pretendard Variable,system-ui,sans-serif;line-height:1.2">0</div>
+              </div>
+              <div style="width:40px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+                <div id="bucket-bar-our_product" class="bucket-bar-fill"
+                     style="height:100%;width:0%;background:#2563eb;border-radius:3px;transition:width 0.3s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+            </div>
+            <!-- competitor_a bucket -->
+            <div class="product-bucket-zone" data-bucket-id="competitor_a"
+                 style="display:flex;align-items:center;gap:8px;padding:5px 12px">
+              <div style="width:4px;height:28px;background:#dc2626;border-radius:2px;flex-shrink:0"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:9px;color:#8a8a8a;font-family:Pretendard Variable,system-ui,sans-serif">경쟁A</div>
+                <div id="bucket-count-competitor_a"
+                     data-testid="product-counter-competitor_a"
+                     class="bucket-count-display"
+                     style="font-size:13px;font-weight:700;color:#fca5a5;font-family:Pretendard Variable,system-ui,sans-serif;line-height:1.2">0</div>
+              </div>
+              <div style="width:40px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+                <div id="bucket-bar-competitor_a" class="bucket-bar-fill"
+                     style="height:100%;width:0%;background:#dc2626;border-radius:3px;transition:width 0.3s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+            </div>
+            <!-- competitor_b bucket -->
+            <div class="product-bucket-zone" data-bucket-id="competitor_b"
+                 style="display:flex;align-items:center;gap:8px;padding:5px 12px">
+              <div style="width:4px;height:28px;background:#ea580c;border-radius:2px;flex-shrink:0"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:9px;color:#8a8a8a;font-family:Pretendard Variable,system-ui,sans-serif">경쟁B</div>
+                <div id="bucket-count-competitor_b"
+                     data-testid="product-counter-competitor_b"
+                     class="bucket-count-display"
+                     style="font-size:13px;font-weight:700;color:#fdba74;font-family:Pretendard Variable,system-ui,sans-serif;line-height:1.2">0</div>
+              </div>
+              <div style="width:40px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+                <div id="bucket-bar-competitor_b" class="bucket-bar-fill"
+                     style="height:100%;width:0%;background:#ea580c;border-radius:3px;transition:width 0.3s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+            </div>
+            <!-- competitor_c bucket -->
+            <div class="product-bucket-zone" data-bucket-id="competitor_c"
+                 style="display:flex;align-items:center;gap:8px;padding:5px 12px">
+              <div style="width:4px;height:28px;background:#ca8a04;border-radius:2px;flex-shrink:0"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:9px;color:#8a8a8a;font-family:Pretendard Variable,system-ui,sans-serif">경쟁C</div>
+                <div id="bucket-count-competitor_c"
+                     data-testid="product-counter-competitor_c"
+                     class="bucket-count-display"
+                     style="font-size:13px;font-weight:700;color:#fde68a;font-family:Pretendard Variable,system-ui,sans-serif;line-height:1.2">0</div>
+              </div>
+              <div style="width:40px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+                <div id="bucket-bar-competitor_c" class="bucket-bar-fill"
+                     style="height:100%;width:0%;background:#ca8a04;border-radius:3px;transition:width 0.3s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+            </div>
+            <!-- pass bucket -->
+            <div class="product-bucket-zone" data-bucket-id="pass"
+                 style="display:flex;align-items:center;gap:8px;padding:5px 12px">
+              <div style="width:4px;height:24px;background:#6b7280;border-radius:2px;flex-shrink:0"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:9px;color:#8a8a8a;font-family:Pretendard Variable,system-ui,sans-serif">패스</div>
+                <div id="bucket-count-pass"
+                     data-testid="product-counter-pass"
+                     class="bucket-count-display"
+                     style="font-size:13px;font-weight:700;color:#d1d5db;font-family:Pretendard Variable,system-ui,sans-serif;line-height:1.2">0</div>
+              </div>
+              <div style="width:40px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+                <div id="bucket-bar-pass" class="bucket-bar-fill"
+                     style="height:100%;width:0%;background:#6b7280;border-radius:3px;transition:width 0.3s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state overlay (pointer-events:none so SVG behind it is still interactive) -->
+          <div
+            data-testid="state-empty"
+            id="sim-state-empty"
+            class="state-placeholder"
+            style="position:absolute;inset:0;pointer-events:none"
+          >
+            <div class="icon">🎯</div>
+            <p style="max-width:220px;margin:0;text-align:center">Run a simulation to see buyer agent decisions</p>
+          </div>
+
+          <!-- Loading indicator (hidden initially) -->
+          <div
+            data-testid="state-loading"
+            id="sim-state-loading"
+            style="display:none;position:absolute;top:var(--space-md);left:50%;transform:translateX(-50%);
+                   background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);
+                   border-radius:9999px;padding:4px 16px;font-size:0.75rem;color:#60a5fa;white-space:nowrap;z-index:10;
+                   backdrop-filter:blur(8px)"
+          >⟳ Running…</div>
+
+          <!-- Completed badge (hidden initially) -->
+          <div
+            data-testid="state-completed"
+            id="sim-state-completed"
+            style="display:none;position:absolute;top:var(--space-md);right:var(--space-md);
+                   background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);
+                   border-radius:9999px;padding:4px 12px;font-size:0.75rem;color:#34d399;z-index:10;
+                   backdrop-filter:blur(8px)"
+          >✓ 완료</div>
+        </div>
+
+        <!-- Agent Chat Log moved to Activity Panel per PRD §12.9 -->
+
+        <!-- Revenue Bar Chart (Sub-AC 6a) — per-iteration bars with baseline -->
+        <div
+          data-testid="revenue-chart"
+          id="revenue-chart"
+          class="revenue-chart"
+          style="display:none"
+          aria-label="Per-iteration revenue chart"
+        >
+          <div class="revenue-chart-header">
+            <span class="revenue-chart-title">반복별 수익</span>
+            <span class="revenue-chart-legend">
+              <span class="legend-item legend-above">▲ 기준 초과</span>
+              <span class="legend-item legend-below">▼ 기준 미달</span>
+            </span>
+          </div>
+          <div class="revenue-chart-body" id="revenue-chart-body">
+            <!-- Floating tooltip — shown on bar hover -->
+            <div class="revenue-chart-tooltip" id="revenue-chart-tooltip" aria-hidden="true"></div>
+            <svg
+              id="revenue-chart-svg"
+              class="revenue-chart-svg"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <!-- Y-axis group — tick marks and KRW labels, drawn by JS -->
+              <g id="revenue-chart-yaxis" class="revenue-chart-axis"></g>
+              <!-- X-axis line, drawn by JS -->
+              <g id="revenue-chart-xaxis" class="revenue-chart-axis"></g>
+              <!-- Grid lines — drawn by JS -->
+              <g id="revenue-chart-grid" class="revenue-chart-grid"></g>
+              <!-- baseline dashed line drawn by JS -->
+              <line
+                id="revenue-baseline-line"
+                data-testid="revenue-baseline"
+                class="revenue-baseline-line"
+                x1="0" y1="0" x2="0" y2="0"
+                stroke="var(--text-muted)"
+                stroke-width="1.5"
+                stroke-dasharray="5,3"
+                opacity="0"
+              />
+              <!-- baseline label drawn by JS -->
+              <text
+                id="revenue-baseline-label"
+                class="revenue-baseline-label"
+                fill="var(--text-muted)"
+                font-size="9"
+                font-family="Pretendard Variable,system-ui,sans-serif"
+                opacity="0"
+              ></text>
+              <!-- bars group — populated by JS on iteration_complete events -->
+              <g id="revenue-chart-bars"></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Agent Count Progress (Sub-AC 4c) — updated on each agent_decision -->
+        <div style="width:100%;display:flex;justify-content:center">
+          <span
+            data-testid="agent-count"
+            id="agent-count"
+            class="agent-count-display"
+            style="display:none"
+            aria-live="polite"
+            aria-atomic="true"
+          >0 / 800 에이전트 완료</span>
+        </div>
+
+        <!-- Archetype Summary Table (Sub-AC 4c) — rendered on iteration_complete -->
+        <div
+          data-testid="archetype-summary-table"
+          id="archetype-summary-wrap"
+          class="archetype-summary"
+          style="display:none"
+          aria-label="아키타입별 결정 요약"
+        >
+          <div class="archetype-summary-header">
+            <span class="archetype-summary-title">아키타입별 선택 요약</span>
+            <span class="archetype-summary-iteration" id="archetype-summary-iteration">Iteration —</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="archetype-summary-table" id="archetype-summary-table-el">
+              <thead>
+                <tr>
+                  <th>아키타입</th>
+                  <th>트리클리닉</th>
+                  <th>경쟁A</th>
+                  <th>경쟁B</th>
+                  <th>경쟁C</th>
+                  <th>패스</th>
+                  <th>합계</th>
+                  <th>우리%</th>
+                </tr>
+              </thead>
+              <tbody id="archetype-summary-tbody">
+                <!-- populated by JS on iteration_complete -->
+              </tbody>
+              <tfoot>
+                <tr id="archetype-summary-tfoot-row">
+                  <!-- populated by JS on iteration_complete -->
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Progress bar row (shown during run) -->
+        <div style="width:100%">
+          <div
+            data-testid="sim-progress"
+            id="sim-progress"
+            style="display:none;flex-direction:column;gap:var(--space-xs)"
+          >
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span class="text-xs text-muted">진행 현황</span>
+              <span class="text-xs text-secondary" data-testid="sim-iteration-label" id="sim-iteration-label">Iteration 0/5</span>
+            </div>
+            <div class="sim-progress-bar-wrap">
+              <div class="sim-progress-bar" id="sim-progress-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Archetype Mixer (PRD §12.4.1, §16) ────────────────────────── -->
+        <div
+          data-testid="archetype-mixer"
+          id="archetype-mixer"
+          class="mixer-panel"
+          style="width:100%;flex-shrink:0;margin-top:var(--space-sm)"
+        >
+          <!-- Header row: title + total badge -->
+          <div class="mixer-header">
+            <span class="mixer-title">구매자 그룹</span>
+            <span
+              data-testid="agent-total"
+              id="agent-total"
+              class="mixer-total-badge"
+              aria-live="polite"
+              aria-atomic="true"
+            >800명 ✓</span>
+          </div>
+
+          <!-- Compact inline table: 8 archetypes as label–input pairs -->
+          <div class="mixer-grid">
+            <div class="mixer-cell">
+              <span class="mixer-label">가격민감</span>
+              <input type="number" data-testid="count-price_sensitive" id="count-price_sensitive" class="mixer-input" min="0" max="800" step="1" value="144"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">가성비</span>
+              <input type="number" data-testid="count-value_seeker" id="count-value_seeker" class="mixer-input" min="0" max="800" step="1" value="128"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">프리미엄</span>
+              <input type="number" data-testid="count-premium_quality" id="count-premium_quality" class="mixer-input" min="0" max="800" step="1" value="96"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">신뢰우선</span>
+              <input type="number" data-testid="count-trust_first" id="count-trust_first" class="mixer-input" min="0" max="800" step="1" value="120"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">감성형</span>
+              <input type="number" data-testid="count-aesthetics_first" id="count-aesthetics_first" class="mixer-input" min="0" max="800" step="1" value="64"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">문제해결</span>
+              <input type="number" data-testid="count-urgency_buyer" id="count-urgency_buyer" class="mixer-input" min="0" max="800" step="1" value="88"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">할인반응</span>
+              <input type="number" data-testid="count-promo_hunter" id="count-promo_hunter" class="mixer-input" min="0" max="800" step="1" value="80"/>
+            </div>
+            <div class="mixer-cell">
+              <span class="mixer-label">가족구매</span>
+              <input type="number" data-testid="count-gift_or_family_buyer" id="count-gift_or_family_buyer" class="mixer-input" min="0" max="800" step="1" value="80"/>
+            </div>
+          </div>
+
+          <!-- Gender row: compact inline -->
+          <div class="mixer-gender">
+            <div class="mixer-gender-group">
+              <span class="mixer-gender-label">남</span>
+              <input type="number" data-testid="gender-male-count" id="gender-male-count" class="mixer-input mixer-input-sm" min="0" max="800" step="1" value="480"/>
+            </div>
+            <span class="mixer-gender-sep">/</span>
+            <div class="mixer-gender-group">
+              <span class="mixer-gender-label">여</span>
+              <input type="number" data-testid="gender-female-count" id="gender-female-count" class="mixer-input mixer-input-sm" min="0" max="800" step="1" value="320"/>
+            </div>
+            <span id="gender-total-display" class="mixer-gender-total">합계 800 ✓</span>
+          </div>
+        </div><!-- /archetype-mixer -->
+      </section>
+
+      <!-- ── RIGHT: Activity Panel ─────────────────────────────── -->
+      <!-- panel-activity: right panel per PRD §12.9                              -->
+      <!--   1. 👑🦞 Strategy Lobster (§12.11)                                    -->
+      <!--   2. 실시간 채팅 로그 / Agent Log (§12.5)                               -->
+      <!-- data-testid="panel-results" kept on inner wrapper for backward compat  -->
+      <aside
+        class="panel-activity"
+        data-testid="panel-activity"
+      >
+
+        <!-- ── 👑🦞 Strategy Lobster (PRD §12.9, §12.11, §16) ────────────────── -->
+        <!-- Slot 1 of Activity Panel. Displays per-iteration candidate strategies -->
+        <!-- and highlights the winner after each iteration_complete event.        -->
+        <div
+          data-testid="strategy-lobster"
+          id="strategy-lobster"
+          class="card strategy-lobster activity-slot"
+          style="display:none;flex-shrink:0;width:100%"
+        >
+          <div class="strategy-lobster-header">
+            <span class="strategy-lobster-emoji">👑🦞</span>
+            <span class="text-xs text-secondary">전략가재</span>
+            <span
+              data-testid="strategy-iteration-label"
+              id="strategy-iteration-label"
+              class="text-xs text-muted"
+              style="margin-left:auto"
+            >Iteration —</span>
+          </div>
+
+          <!-- 3 candidate strategy cards (populated on iteration_start SSE event) -->
+          <div class="strategy-candidates-list" id="strategy-candidates-list">
+            <div
+              data-testid="strategy-candidate-1"
+              id="strategy-candidate-1"
+              class="strategy-candidate-card"
+            >
+              <span class="candidate-num text-xs text-muted">①</span>
+              <div class="candidate-body">
+                <span class="candidate-title text-sm" id="candidate-1-title">—</span>
+                <span class="candidate-price text-xs text-secondary" id="candidate-1-price"></span>
+                <span class="candidate-rationale text-xs text-muted" id="candidate-1-rationale"></span>
+              </div>
+              <span class="candidate-winner" id="candidate-1-winner" style="display:none">👑</span>
+            </div>
+            <div
+              data-testid="strategy-candidate-2"
+              id="strategy-candidate-2"
+              class="strategy-candidate-card"
+            >
+              <span class="candidate-num text-xs text-muted">②</span>
+              <div class="candidate-body">
+                <span class="candidate-title text-sm" id="candidate-2-title">—</span>
+                <span class="candidate-price text-xs text-secondary" id="candidate-2-price"></span>
+                <span class="candidate-rationale text-xs text-muted" id="candidate-2-rationale"></span>
+              </div>
+              <span class="candidate-winner" id="candidate-2-winner" style="display:none">👑</span>
+            </div>
+            <div
+              data-testid="strategy-candidate-3"
+              id="strategy-candidate-3"
+              class="strategy-candidate-card"
+            >
+              <span class="candidate-num text-xs text-muted">③</span>
+              <div class="candidate-body">
+                <span class="candidate-title text-sm" id="candidate-3-title">—</span>
+                <span class="candidate-price text-xs text-secondary" id="candidate-3-price"></span>
+                <span class="candidate-rationale text-xs text-muted" id="candidate-3-rationale"></span>
+              </div>
+              <span class="candidate-winner" id="candidate-3-winner" style="display:none">👑</span>
+            </div>
+          </div>
+
+          <!-- Strategy reasoning from gpt-5.4 (PRD §12.11) -->
+          <p
+            data-testid="strategy-rationale"
+            id="strategy-lobster-rationale"
+            class="text-xs text-muted strategy-lobster-rationale"
+          ></p>
+        </div><!-- /strategy-lobster -->
+
+        <!-- ── 에이전트 라이브 채팅 로그 (PRD §12.5, §12.9, §16) ────────────── -->
+        <!-- Slot 2 of Activity Panel. Fills remaining vertical height.            -->
+        <!-- overflow-y: auto per §12.9. Each agent_decision SSE → new entry.    -->
+        <div
+          data-testid="agent-log"
+          id="agent-log"
+          class="agent-log activity-slot activity-log-fill"
+          style="display:none"
+          aria-label="Agent decision log"
+          aria-live="polite"
+          aria-relevant="additions"
+        >
+          <div class="agent-log-header">
+            <span class="agent-log-title">에이전트 로그</span>
+            <span class="agent-log-count" id="agent-log-count">0 / 0</span>
+          </div>
+          <div class="agent-log-entries" id="agent-log-entries">
+            <div class="agent-log-empty" id="agent-log-empty">에이전트 결정을 기다리는 중…</div>
+          </div>
+        </div><!-- /agent-log -->
+
+        <!-- Inner results container — data-testid="panel-results" for backward compat -->
+        <!-- flex:1 lets it fill remaining vertical space below strategy-lobster/agent-log -->
+        <div
+          class="panel-results-inner"
+          data-testid="panel-results"
+          id="panel-results-inner"
+          style="display:flex;flex-direction:column;gap:var(--card-gap);flex:1;min-height:0;width:100%;overflow-y:auto"
+        >
+
+        <!-- Empty state -->
+        <div class="state-placeholder" data-testid="state-empty" id="results-state-empty">
+          <div class="icon">🎯</div>
+          <p>Run the simulation to see a recommendation</p>
+        </div>
+
+        <!-- Error state (hidden by default) -->
+        <div data-testid="state-error" id="results-state-error" style="display:none">
+          <div class="card">
+            <p class="section-title" style="color:var(--accent-red)">오류 발생</p>
+            <p class="state-error-text" id="error-message">알 수 없는 오류가 발생했습니다.</p>
+          </div>
+        </div>
+
+        <!-- Results content (hidden by default, revealed on simulation_complete) -->
+        <div id="results-content" style="display:none;flex-direction:column;gap:var(--card-gap)">
+
+          <!-- Metrics Row -->
+          <div class="card reveal" data-testid="metrics-row">
+            <div class="metrics-row">
+              <div class="metric-card">
+                <span class="metric-label">Baseline revenue</span>
+                <span class="metric-value" data-testid="metric-baseline" id="metric-baseline">—</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Final revenue</span>
+                <span class="metric-value" data-testid="metric-final" id="metric-final">—</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Holdout uplift</span>
+                <span class="metric-value" data-testid="metric-holdout" id="metric-holdout">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Summary Card -->
+          <div class="card reveal" data-testid="strategy-summary" id="strategy-summary">
+            <p class="section-title">추천 전략</p>
+            <div class="strategy-row">
+              <span class="strategy-key">제목</span>
+              <span class="strategy-val" id="strategy-title">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">카피</span>
+              <span class="strategy-val" id="strategy-copy">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">가격</span>
+              <span class="strategy-val" id="strategy-price">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">마진</span>
+              <span class="strategy-val text-secondary" id="strategy-margin">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">근거</span>
+              <span class="strategy-val text-muted text-xs" id="strategy-rationale" style="max-height:2.8em;overflow:hidden">—</span>
+            </div>
+          </div>
+
+          <!-- Diff Card -->
+          <div class="card reveal" data-testid="diff-output" id="diff-output">
+            <p class="section-title">변경 사항</p>
+
+            <!-- diff-title -->
+            <div class="diff-item" data-testid="diff-title" id="diff-title-card">
+              <div class="diff-label">제목</div>
+              <div class="diff-before" id="diff-title-before">—</div>
+              <div class="diff-after" id="diff-title-after">—</div>
+            </div>
+
+            <!-- diff-top-copy -->
+            <div class="diff-item" data-testid="diff-top-copy" id="diff-top-copy-card">
+              <div class="diff-label">카피</div>
+              <div class="diff-before" id="diff-copy-before">—</div>
+              <div class="diff-after" id="diff-copy-after">—</div>
+            </div>
+
+            <!-- diff-price -->
+            <div class="diff-item" data-testid="diff-price" id="diff-price-card">
+              <div class="diff-label">가격</div>
+              <div class="diff-before" id="diff-price-before">—</div>
+              <div class="diff-after" id="diff-price-after">—</div>
+            </div>
+          </div>
+
+          <!-- Artifact Card -->
+          <div class="card reveal" data-testid="artifact-output" id="artifactOutput">
+            <p class="section-title">Artifact</p>
+            <p class="text-xs text-muted" style="margin-bottom:var(--space-sm)">artifacts/latest-run-summary.json</p>
+            <div class="strategy-row">
+              <span class="strategy-key">전략 ID</span>
+              <span class="strategy-val text-sm" id="artifact-strategy-id">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">Uplift</span>
+              <span class="strategy-val text-sm" id="artifact-holdout-uplift">—</span>
+            </div>
+            <div class="strategy-row">
+              <span class="strategy-key">시각</span>
+              <span class="strategy-val text-xs text-muted" id="artifact-timestamp">—</span>
+            </div>
+          </div>
+
+          <!-- Insights Panel (Sub-AC 6b) — archetype_breakdown threshold analysis -->
+          <div
+            class="card insights-panel"
+            data-testid="insights-panel"
+            id="insights-panel"
+            style="display:none"
+            aria-label="아키타입 인사이트"
+          >
+            <p class="section-title">아키타입 인사이트</p>
+            <div class="insights-list" id="insights-list">
+              <!-- Populated by JS from archetype_breakdown on iteration_complete events -->
+            </div>
+          </div>
+
+        </div>
+        </div><!-- /panel-results-inner -->
+      </aside><!-- /panel-activity -->
+
+    </main>
+
+    <!-- ============================================================
+         Agent Profile Popup — Sub-AC 5b (PRD §12.8 + §16)
+         data-testid="agent-profile"
+         Triggered by clicking a log entry; dismissible via X, ESC, overlay
+         ============================================================ -->
+    <div
+      data-testid="agent-profile"
+      id="agent-profile-popup"
+      class="agent-profile-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="에이전트 프로필"
+      style="display:none"
+    >
+      <!-- Backdrop — click outside to close -->
+      <div class="agent-profile-backdrop" id="agent-profile-backdrop"></div>
+
+      <!-- Dialog card -->
+      <div class="agent-profile-dialog" id="agent-profile-dialog">
+
+        <!-- Header: name + archetype + close button -->
+        <div class="agent-profile-header">
+          <!-- PRD §16: profile-name wraps the identity section (🦞 + name + age) -->
+          <div class="agent-profile-identity" data-testid="profile-name" id="profile-name">
+            <span class="agent-dot agent-profile-dot" id="agent-profile-dot"></span>
+            <div>
+              <!-- Backward-compat testid for existing tests -->
+              <p class="agent-profile-name" data-testid="agent-profile-name" id="agent-profile-name">구매자</p>
+              <!-- PRD §16 archetype testids (both naming conventions) -->
+              <p class="agent-profile-archetype-label" data-testid="agent-profile-archetype" id="agent-profile-archetype">—</p>
+              <p class="agent-profile-archetype-label" data-testid="profile-archetype" id="profile-archetype" style="display:none">—</p>
+            </div>
+          </div>
+          <button
+            class="agent-profile-close"
+            data-testid="agent-profile-close"
+            id="agent-profile-close"
+            aria-label="프로필 닫기"
+            type="button"
+          >✕</button>
+        </div>
+
+        <!-- PRD §12.8 + §16 extra identity fields: location, occupation, bio -->
+        <div class="agent-profile-meta" id="agent-profile-meta">
+          <p class="agent-profile-meta-item" data-testid="profile-location" id="profile-location" style="display:none">
+            📍 <span id="profile-location-text">—</span>
+          </p>
+          <p class="agent-profile-meta-item" data-testid="profile-occupation" id="profile-occupation" style="display:none">
+            💼 <span id="profile-occupation-text">—</span>
+          </p>
+          <p class="agent-profile-meta-item agent-profile-bio" data-testid="profile-bio" id="profile-bio" style="display:none"></p>
+        </div>
+
+        <!-- Stat bars: 5 traits -->
+        <!-- PRD §16: both agent-profile-stats (backward compat) and profile-stat-{name} per-row wrappers -->
+        <div class="agent-profile-stats" data-testid="agent-profile-stats">
+
+          <!-- price_sensitivity -->
+          <div class="stat-bar-row" data-testid="profile-stat-price_sensitivity">
+            <span class="stat-label">가격민감도</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar stat-bar-price" data-testid="stat-price-sensitivity" id="stat-price-sensitivity"></div>
+            </div>
+            <span class="stat-val" data-testid="stat-val-price-sensitivity" id="stat-val-price-sensitivity">—</span>
+          </div>
+
+          <!-- trust_sensitivity -->
+          <div class="stat-bar-row" data-testid="profile-stat-trust_sensitivity">
+            <span class="stat-label">신뢰민감도</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar stat-bar-trust" data-testid="stat-trust-sensitivity" id="stat-trust-sensitivity"></div>
+            </div>
+            <span class="stat-val" data-testid="stat-val-trust-sensitivity" id="stat-val-trust-sensitivity">—</span>
+          </div>
+
+          <!-- promo_affinity -->
+          <div class="stat-bar-row" data-testid="profile-stat-promo_affinity">
+            <span class="stat-label">할인반응도</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar stat-bar-promo" data-testid="stat-promo-affinity" id="stat-promo-affinity"></div>
+            </div>
+            <span class="stat-val" data-testid="stat-val-promo-affinity" id="stat-val-promo-affinity">—</span>
+          </div>
+
+          <!-- brand_bias -->
+          <div class="stat-bar-row" data-testid="profile-stat-brand_bias">
+            <span class="stat-label">브랜드편향</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar stat-bar-brand" data-testid="stat-brand-bias" id="stat-brand-bias"></div>
+            </div>
+            <span class="stat-val" data-testid="stat-val-brand-bias" id="stat-val-brand-bias">—</span>
+          </div>
+
+          <!-- pass_threshold -->
+          <div class="stat-bar-row" data-testid="profile-stat-pass_threshold">
+            <span class="stat-label">구매임계값</span>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar stat-bar-pass" data-testid="stat-pass-threshold" id="stat-pass-threshold"></div>
+            </div>
+            <span class="stat-val" data-testid="stat-val-pass-threshold" id="stat-val-pass-threshold">—</span>
+          </div>
+
+        </div>
+
+        <!-- Choice badge — both naming conventions for backward compat -->
+        <div class="agent-profile-choice-row">
+          <span class="agent-profile-choice-label">선택 제품</span>
+          <span class="agent-chosen-product" data-testid="agent-profile-choice" id="agent-profile-choice">—</span>
+          <span class="agent-chosen-product" data-testid="profile-choice" id="profile-choice" style="display:none">—</span>
+        </div>
+
+        <!-- Reasoning — both naming conventions for backward compat -->
+        <div class="agent-profile-reasoning">
+          <p class="agent-profile-reasoning-label">결정 근거</p>
+          <p class="agent-profile-reasoning-text" data-testid="agent-profile-reasoning" id="agent-profile-reasoning">—</p>
+          <p class="agent-profile-reasoning-text" data-testid="profile-reasoning" id="profile-reasoning" style="display:none">—</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================
+         Results Popup Modal (PRD §12.10 + §16)
+         data-testid="results-popup"
+         Opens automatically on simulation_complete; dismissible via X, ESC, overlay
+         Can be re-opened via btn-show-results
+         ============================================================ -->
+    <div
+      data-testid="results-popup"
+      id="results-popup"
+      class="results-popup-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="시뮬레이션 결과"
+      style="display:none"
+    >
+      <!-- Backdrop — click outside to close -->
+      <div class="results-popup-backdrop" id="results-popup-backdrop"></div>
+
+      <!-- Dialog card -->
+      <div class="results-popup-dialog" id="results-popup-dialog">
+
+        <!-- Header -->
+        <div class="results-popup-header">
+          <h3 class="results-popup-title">🏆 시뮬레이션 결과</h3>
+          <button
+            data-testid="results-popup-close"
+            id="results-popup-close"
+            class="results-popup-close"
+            type="button"
+            aria-label="결과 닫기"
+          >✕</button>
+        </div>
+
+        <!-- Body — all Results data-testid anchors per PRD §12.10 + §16               -->
+        <!-- "모든 기존 Results data-testid는 팝업 내부에 위치" — PRD §12.10           -->
+        <div class="results-popup-body" id="results-popup-body">
+
+          <!-- ── Metrics Row (PRD §12.10, §16: metrics-row, metric-*) ──────────── -->
+          <div class="results-popup-metrics" id="results-popup-metrics">
+            <div class="popup-metric-row metrics-row" id="popup-metrics-row">
+              <div class="popup-metric metric-card">
+                <span class="popup-metric-label metric-label">Baseline revenue</span>
+                <span
+                  class="popup-metric-value metric-value"
+                  id="popup-metric-baseline"
+                >—</span>
+              </div>
+              <div class="popup-metric metric-card">
+                <span class="popup-metric-label metric-label">Final revenue</span>
+                <span
+                  class="popup-metric-value metric-value"
+                  id="popup-metric-final"
+                >—</span>
+              </div>
+              <div class="popup-metric metric-card">
+                <span class="popup-metric-label metric-label">Holdout uplift</span>
+                <span
+                  class="popup-metric-value metric-value"
+                  id="popup-metric-holdout"
+                >—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Strategy + Diff 2-col grid (PRD §12.10, §16: strategy-summary, diff-*) -->
+          <div class="results-popup-grid" id="results-popup-grid">
+
+            <!-- Strategy Summary column -->
+            <div class="popup-grid-col">
+              <p class="popup-col-label section-title">추천 전략</p>
+              <!-- popup-strategy-summary (no duplicate data-testid per strict-mode guard) -->
+              <div
+                class="strategy-summary-block"
+                id="popup-strategy-summary"
+              >
+                <div class="strategy-row">
+                  <span class="strategy-key">제목</span>
+                  <span class="strategy-val text-sm" id="popup-strategy-title">—</span>
+                </div>
+                <div class="strategy-row">
+                  <span class="strategy-key">카피</span>
+                  <span class="strategy-val text-sm" id="popup-strategy-copy">—</span>
+                </div>
+                <div class="strategy-row">
+                  <span class="strategy-key">가격</span>
+                  <span class="strategy-val text-sm" id="popup-strategy-price">—</span>
+                </div>
+                <div class="strategy-row">
+                  <span class="strategy-key">마진</span>
+                  <span class="strategy-val text-sm text-secondary" id="popup-strategy-margin">—</span>
+                </div>
+                <div class="strategy-row">
+                  <span class="strategy-key">근거</span>
+                  <span class="strategy-val text-xs text-muted" id="popup-strategy-rationale-text"
+                        style="max-height:2.8em;overflow:hidden">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Diff Card column -->
+            <div class="popup-grid-col">
+              <p class="popup-col-label section-title">변경 사항</p>
+              <!-- popup diff block (no duplicate data-testid per strict-mode guard) -->
+              <div
+                class="diff-output-block"
+                id="popup-diff-output"
+              >
+                <div class="diff-item" id="popup-diff-title-card">
+                  <div class="diff-label">제목</div>
+                  <div class="diff-before" id="popup-diff-title-before">—</div>
+                  <div class="diff-after" id="popup-diff-title-after">—</div>
+                </div>
+                <div class="diff-item" id="popup-diff-top-copy-card">
+                  <div class="diff-label">카피</div>
+                  <div class="diff-before" id="popup-diff-copy-before">—</div>
+                  <div class="diff-after" id="popup-diff-copy-after">—</div>
+                </div>
+                <div class="diff-item" id="popup-diff-price-card">
+                  <div class="diff-label">가격</div>
+                  <div class="diff-before" id="popup-diff-price-before">—</div>
+                  <div class="diff-after" id="popup-diff-price-after">—</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /results-popup-grid -->
+
+          <!-- ── Revenue Chart + Insights row (PRD §12.6, §12.7, §16) ─────────── -->
+          <div class="results-popup-chart-row">
+
+            <!-- Revenue Bar Chart popup copy (no duplicate data-testid per strict-mode guard) -->
+            <div
+              class="popup-revenue-chart-wrap"
+              id="popup-revenue-chart"
+              aria-label="Per-iteration revenue chart"
+            >
+              <div class="revenue-chart-header">
+                <span class="revenue-chart-title text-xs text-secondary">반복별 수익</span>
+              </div>
+              <div class="revenue-chart-body" id="popup-revenue-chart-body">
+                <!-- Floating tooltip for popup chart -->
+                <div class="revenue-chart-tooltip" id="popup-revenue-chart-tooltip" aria-hidden="true"></div>
+                <svg
+                  id="popup-revenue-chart-svg"
+                  class="revenue-chart-svg"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <!-- Y-axis group — drawn by JS -->
+                  <g id="popup-revenue-chart-yaxis" class="revenue-chart-axis"></g>
+                  <!-- X-axis group — drawn by JS -->
+                  <g id="popup-revenue-chart-xaxis" class="revenue-chart-axis"></g>
+                  <!-- Grid lines — drawn by JS -->
+                  <g id="popup-revenue-chart-grid" class="revenue-chart-grid"></g>
+                  <!-- baseline dashed line — drawn by JS -->
+                  <line
+                    id="popup-revenue-baseline-line"
+                    class="revenue-baseline-line"
+                    x1="0" y1="0" x2="0" y2="0"
+                    stroke="var(--text-muted)"
+                    stroke-width="1.5"
+                    stroke-dasharray="5,3"
+                    opacity="0"
+                  />
+                  <!-- baseline label — drawn by JS -->
+                  <text
+                    id="popup-revenue-baseline-label"
+                    class="revenue-baseline-label"
+                    fill="var(--text-muted)"
+                    font-size="9"
+                    font-family="Pretendard Variable,system-ui,sans-serif"
+                    opacity="0"
+                  ></text>
+                  <!-- iteration bars — populated by JS on iteration_complete -->
+                  <g id="popup-revenue-chart-bars"></g>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Insights Panel popup copy (no duplicate data-testid per strict-mode guard) -->
+            <div
+              class="popup-insights-wrap insights-panel"
+              id="popup-insights-panel"
+              aria-label="아키타입 인사이트"
+            >
+              <p class="section-title text-xs text-secondary" style="margin-bottom:var(--space-sm)">
+                핵심 인사이트
+              </p>
+              <!-- Insight items — populated by JS on simulation_complete          -->
+              <!-- Each item: data-testid="insight-item" per §16 (min 3 items)    -->
+              <div class="insights-list" id="popup-insights-list">
+                <!-- placeholder shown before simulation runs -->
+                <p class="text-xs text-muted" id="popup-insights-placeholder">
+                  시뮬레이션 완료 후 표시됩니다.
+                </p>
+              </div>
+            </div>
+
+          </div><!-- /results-popup-chart-row -->
+
+          <!-- ── Artifact Card (PRD §12.10, §16: artifact-output) ──────────────── -->
+          <div class="results-popup-artifact" id="results-popup-artifact">
+            <div
+              class="popup-artifact-card"
+              id="popup-artifact-output"
+            >
+              <span class="text-xs text-muted">📁 Artifact:</span>
+              <span class="text-xs text-muted" id="popup-artifact-strategy-id">—</span>
+              <span class="text-xs text-muted">✓</span>
+              <div class="strategy-row" style="margin-top:var(--space-xs)">
+                <span class="strategy-key">Uplift</span>
+                <span class="strategy-val text-xs" id="popup-artifact-holdout-uplift">—</span>
+              </div>
+              <div class="strategy-row">
+                <span class="strategy-key">시각</span>
+                <span class="strategy-val text-xs text-muted" id="popup-artifact-timestamp">—</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /results-popup-body -->
+
+      </div>
+    </div>
+
+    <script type="module" src="/dashboard.js"></script>
+
+    <!-- IntersectionObserver — Scroll Entry Animations (PRD §12.2 rule 7) -->
+    <script>
+      // Activate reveal class on elements as they enter viewport
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
+      );
+
+      // Observe all .reveal and .reveal-stagger elements
+      function observeRevealElements() {
+        document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => {
+          revealObserver.observe(el);
+        });
+      }
+
+      // Run on DOMContentLoaded and also expose for dynamic content
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', observeRevealElements);
+      } else {
+        observeRevealElements();
+      }
+
+      // Export for dashboard.js to call after revealing results
+      window.__observeReveal = observeRevealElements;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,461 @@
+version: 1
+session_id: "interview_20260327_024642"
+goal: "Build the seller-war-game operator dashboard as a fully working demo product: 3-panel layout with editable inputs, SSE-streamed force-directed simulation visualization, and Playwright-verified results — all per the PRD at .omx/plans/prd-seller-war-game-ralphthon-0to1.md"
+task_type: "code"
+validation_profile: "multi_screen_app"
+
+constraints:
+  - "Use the existing workspace only — do NOT create a new project"
+  - "Node.js ESM (.mjs extension), vanilla http.createServer, no React/Vue/framework"
+  - "Frontend: vanilla HTML/CSS/JS only, no bundler, no build step"
+  - "Follow Supanova Premium design tokens in PRD §12.2: Vantablack Luxe theme (#050505 OLED black), Pretendard font (Inter/Noto Sans KR BANNED), Double-Bezel card architecture, pill CTA buttons with glow, cubic-bezier(0.16,1,0.3,1) transitions only, backdrop-blur glass effects, scroll entry animations via IntersectionObserver"
+  - "Implement all data-testid attributes listed in PRD §16"
+  - "Fixture markdown files are read-only — never modify files under fixtures/"
+  - "All monetary values in KRW integer format"
+  - "Korean for product content, English for code/technical content"
+  - "Keep existing test files working — extend, don't replace"
+  - "REGRESSION GUARD: Before modifying any file, run `node --test tests/*.test.mjs` to capture baseline. After modification, run again. If any previously-passing test now fails, REVERT the change immediately. Never break working code to add new features."
+  - "SSE event format is frozen after AC3 passes: do NOT change agent_decision or iteration_complete event shapes in later ACs. If new fields are needed, ADD them — never rename or restructure existing fields."
+  - "Each AC must be tested in isolation before moving to the next. Do NOT implement multiple ACs simultaneously against untested code."
+  - "OpenAI models: gpt-5.4 for strategy/judge, gpt-5-nano for buyer evaluation"
+
+acceptance_criteria:
+  # Level 1: Foundation (runs first — server + API)
+  - |
+    [AC1] Expand GET /api/fixtures to return the full product schema per PRD §14.4:
+    product (product_name, brand_name, current_title, current_top_copy, current_price_krw, current_cost_krw),
+    competitors (id, product_name, price_krw), archetypes (id, label, cohort_weight_percent), defaults.
+    Existing tests in fixtures.test.mjs must still pass.
+  - |
+    [AC2] Add title/topCopy/priceKrw/costKrw override support to POST /api/run:
+    server.mjs must pass these to engine.mjs runSimulation,
+    engine.mjs must use overrides to build the baseline instead of fixture defaults.
+    Verify: POST /api/run with priceKrw=19900 returns different baseline revenue than default.
+  # Level 2: Individual Agent Engine + SSE Streaming (depends on AC2)
+  - |
+    [AC3] Rewrite simulation engine for individual agent LLM calls and implement SSE streaming per PRD §13 (depends on AC2):
+    1. Agent generation: create 800 individual buyer agents from 8 archetypes (proportional to cohort_weight_percent). Each agent gets a rich persona: unique Korean name, age (20-65), location (Korean city from 20-city pool), occupation (from archetype-specific job pool), personality (1-line), bio (1-2 line self-intro), agent_id, and ±10% variation on sensitivity values. Full persona included in LLM prompt.
+    2. Individual evaluation: replace evaluateArchetypeBatch with evaluateIndividualAgent — each of the 800 agents makes 1 gpt-5-nano call to choose a product (our_product/competitor_a/competitor_b/competitor_c/pass) with reasoning. Use max_concurrency=200+ for parallel calls (rate limit 허용 범위 내 최대). Total simulation must complete within 600 seconds (10 minutes).
+    3. SSE endpoint POST /api/run/stream with Content-Type: text/event-stream.
+    4. Events: iteration_start (1), agent_decision (×800 per iteration with agent_id, agent_name, archetype_id, chosen_product, reasoning, agent_index/agent_total), iteration_complete (1, with choice_summary and archetype_breakdown), holdout_start, simulation_complete.
+    5. Remove deterministic sampler — LLM directly chooses for each agent.
+    6. Accepts same request body as /api/run including overrides.
+  # Level 3: Dashboard UI (depends on AC1, parallel with AC3)
+  - |
+    [AC4] Rebuild dashboard.html as 3-panel layout per PRD §12 (depends on AC1):
+    panel-input (340px left): product-card with 6 editable fields, competitors-card (3 cards), archetype-weights-card (8 sliders + gender slider), settings-card, btn-run, status-text.
+    panel-simulation (flex center): sim-canvas placeholder, state-empty text.
+    panel-activity (380px right): metrics-row (3 metrics), strategy-summary, diff-output (3 diffs), artifact-output.
+    Apply all CSS design tokens from PRD §12.2 (dark theme, card styles, typography).
+    All data-testid attributes from PRD §16 must be present.
+    Product card shows auto-calculated margin rate ((price-cost)/price).
+  - |
+    [AC5] Rebuild dashboard.js (depends on AC1):
+    1. Fetch GET /api/fixtures on load and populate all editable fields (input-title, input-top-copy, input-price, input-cost) and read-only fields (product-name, product-brand, competitors, defaults).
+    2. Format all prices with Intl.NumberFormat('ko-KR', {style:'currency', currency:'KRW'}).
+    3. On btn-run click: disable button, collect all 6 input values, POST to /api/run/stream.
+    4. Parse SSE events and update UI state (empty→loading→completed or error).
+    5. On simulation_complete: populate metrics, strategy-summary (card format, NO raw JSON), diff (before→after with line-through), artifact-output.
+    6. On error: show state-error with readable message, re-enable button.
+    7. Holdout uplift: green for positive, red for negative.
+  # Level 4: Particle Flow Visualization (depends on AC3 + AC4)
+  - |
+    [AC6] Implement particle flow visualization in sim-canvas per PRD §12.4 (depends on AC3, AC4):
+    Canvas 2D rendering of 800 individual agent decisions as flowing 🦞 emoji particles (font-size 14px).
+    Left side: particle spawn area. Right side: 5 product buckets with real-time counters (data-testid="product-counter-{id}").
+    Particle colors: archetype-based (8 colors). Product bucket colors: our_product=#2563eb, competitor_a=#dc2626, competitor_b=#ea580c, competitor_c=#ca8a04, pass=#6b7280.
+    On each agent_decision SSE: spawn 1 particle, animate it flowing to chosen product bucket (0.2s), increment counter.
+    Agent count display (data-testid="agent-count"): "247 / 800 에이전트 완료".
+    On iteration_complete: show archetype summary table (data-testid="archetype-summary-table") with per-archetype choice percentages.
+    On simulation_complete: freeze particles, show final state.
+    Must handle ~800 concurrent particles at ≥30fps (Canvas 2D, requestAnimationFrame). All UI updates (counter increment, chart bar add, popup) must respond within 500ms.
+  # Level 3b: Archetype Mixer (depends on AC4)
+  - |
+    [AC4b] Implement archetype-mixer in Simulation Panel per PRD §12.4.1 (depends on AC4):
+    Container (data-testid="archetype-mixer") below sim-canvas. 4x2 grid of number inputs (data-testid="count-{archetype_id}") for 8 archetypes.
+    Default values from fixture cohort_weight_percent × 800. Total display (data-testid="agent-total") shows sum.
+    btn-run is DISABLED unless total = exactly 800. Show "✗ N명 부족/초과" in red when != 800.
+    Gender inputs: data-testid="gender-male-count" + "gender-female-count", must also sum to 800.
+    Send archetypeCounts and genderMaleCount in SSE request body. Integer only, no decimals.
+  # Level 4a: Strategy Lobster Panel (depends on AC3 + AC4)
+  - |
+    [AC6a] Implement 👑🦞 Strategy Lobster panel per PRD §12.9 (depends on AC3, AC4):
+    Container (data-testid="strategy-lobster") in Simulation Panel above sim-canvas.
+    On iteration_start SSE: display 3 candidate strategy cards (data-testid="strategy-candidate-{n}") each with title, price, rationale.
+    Display strategy_reasoning (data-testid="strategy-rationale") explaining why gpt-5.4 chose this direction.
+    On iteration_complete SSE: highlight winner card with 👑 icon and blue border.
+    Updates each iteration. Include iteration label (data-testid="strategy-iteration-label").
+  # Level 4b: Agent Chat Log + Profile (depends on AC3 + AC4)
+  - |
+    [AC6b] Implement agent chat log and profile popup per PRD §12.5, §12.8 (depends on AC3, AC4):
+    Agent chat log (data-testid="agent-log"): scrolling container below particle flow canvas, max-height 300px, auto-scroll.
+    Each agent_decision SSE event adds one entry (data-testid="agent-log-entry") with: archetype color dot, agent name + archetype label, chosen product (product color), reasoning quote (1 line).
+    800 entries total per iteration. Click any entry → agent profile popup.
+    Agent profile popup (data-testid="agent-profile"): modal overlay with name, archetype, 5 stat progress bars (price_sensitivity, trust_sensitivity, promo_affinity, brand_bias, pass_threshold), chosen product, reasoning.
+    Close via X button (data-testid="agent-profile-close"), ESC key, or overlay click.
+  # Level 4c: Revenue Chart + Insights (depends on AC3 + AC5)
+  - |
+    [AC6c] Implement revenue chart and auto-generated insights per PRD §12.6, §12.7 (depends on AC3, AC5):
+    Revenue chart (data-testid="revenue-chart"): bar chart in Results Panel, X=iteration number, Y=revenue (KRW, auto-scale).
+    Each iteration_complete SSE event adds 1 bar (data-testid="revenue-bar-{n}"). Baseline horizontal dashed line (data-testid="revenue-baseline"). Bars above baseline = green border, below = red border.
+    Auto-generated insights (data-testid="insights-panel"): displayed after simulation_complete.
+    Generate minimum 3, maximum 8 insight items (data-testid="insight-item") from archetype_breakdown:
+    - ⚠️ if our_product share < 25% for an archetype (defection warning)
+    - ✅ if our_product share > 50% (strength)
+    - 🟡 if pass share > 40% (disengagement)
+    Each insight: icon + archetype name + percentage + recommended action.
+  # Level 5: Testing + Evidence (depends on all above)
+  - |
+    [AC7] Add/update tests to cover all new functionality (depends on AC1-AC6c).
+    CRITICAL: Tests MUST include a live OpenAI verification step:
+    1. Set SELLER_WAR_GAME_MODEL_MODE=live (ensure OPENAI_API_KEY is set in .env)
+    2. Start server with npm start
+    3. POST /api/run/stream with iterationCount=1 — verify simulation_complete event received with real LLM responses
+    4. Verify holdout_uplift exists in the response (value can be positive or negative — live LLM results vary)
+    5. Capture Playwright screenshots in live mode (browser_full_run_live flow)
+    Do NOT skip live verification — mock-only pass is NOT sufficient for QA PASS.
+    Additional tests:
+    engine.test.mjs: test override parameters (title, price, cost change baseline).
+    Add sse.test.mjs: verify SSE event sequence, archetype count, choices sum.
+    Add dashboard-e2e.test.mjs: Playwright tests for empty/loading/completed/error states.
+    All existing tests must still pass: npm test succeeds with 0 failures.
+    node --check src/server.mjs and src/lib/simulation/engine.mjs pass.
+  - |
+    [AC8] Capture evidence bundle per test spec §11 (depends on AC7):
+    Playwright screenshots: empty_state_desktop.png, loading_state_desktop.png, completed_state_desktop.png, error_state_desktop.png.
+    Run automated visual judgment (verifyNoRawJson, verifyThreePanelLayout, verifyKrwFormat, verifyButtonState, verifyDesignTokens, verifyDiffFormat, verifyErrorReadability) per test spec §8.2-8.3.
+    Verify artifact consistency: strategy_id, baseline_revenue, final_revenue, holdout_uplift, diff match across UI, API response, and artifacts/latest-run-summary.json.
+    Store evidence under .ralph/ or artifacts/.
+
+brownfield_context:
+  repo_type: "brownfield"
+  stack: ["nodejs", "javascript", "vanilla-html", "vanilla-css", "openai"]
+  touched_paths:
+    - "src/server.mjs"
+    - "src/app/dashboard.html"
+    - "src/app/dashboard.js"
+    - "src/app/styles.css"
+    - "src/lib/simulation/engine.mjs"
+    - "tests/"
+  conventions:
+    - "All source files use .mjs extension (ESM)"
+    - "Preserve existing element IDs — add data-testid, don't remove ids"
+    - "Fixture files are read-only markdown"
+    - "Tests use node:test built-in runner"
+    - "No build step — run directly with node"
+    - "Monetary values: KRW integer, no decimals"
+
+runtime:
+  services:
+    - name: "web"
+      cwd: "."
+      start_command: "npm start"
+      ready_probe:
+        type: "http"
+        target: "http://127.0.0.1:3001/"
+        timeout_sec: 30
+
+verification:
+  mechanical:
+    - "npm test"
+    - "node --check src/server.mjs"
+    - "node --check src/lib/simulation/engine.mjs"
+
+  artifact_checks:
+    - type: "file_exists"
+      path: "artifacts/latest-run-summary.json"
+    - type: "file_exists"
+      path: ".omx/plans/prd-seller-war-game-ralphthon-0to1.md"
+
+  http_checks:
+    - id: "health"
+      service: "web"
+      method: "GET"
+      path: "/"
+      expected_status: 200
+      body_contains: ["SwarmOps"]
+      timeout_sec: 10
+
+    - id: "fixtures_api"
+      service: "web"
+      method: "GET"
+      path: "/api/fixtures"
+      expected_status: 200
+      body_contains: ["current_title", "current_top_copy", "brand_name", "competitors", "archetypes"]
+      timeout_sec: 10
+
+    - id: "run_batch"
+      service: "web"
+      method: "POST"
+      path: "/api/run"
+      request_body: '{"iterationCount":1,"minimumMarginFloor":0.35}'
+      expected_status: 200
+      body_contains: ["baseline", "selected_strategy", "holdout", "diff", "artifact"]
+      timeout_sec: 120
+
+    - id: "run_stream"
+      service: "web"
+      method: "POST"
+      path: "/api/run/stream"
+      request_body: '{"iterationCount":1,"minimumMarginFloor":0.35}'
+      expected_status: 200
+      body_contains: ["iteration_start", "agent_decision", "simulation_complete"]
+      timeout_sec: 120
+
+  browser_flows:
+    - id: "empty_state"
+      service: "web"
+      name: "Dashboard empty state with pre-populated fields"
+      start_route: "/"
+      steps:
+        - type: "goto"
+          url: "/"
+          timeout_sec: 15
+        - type: "assert_visible"
+          selector: "[data-testid='panel-input']"
+          timeout_sec: 10
+        - type: "assert_visible"
+          selector: "[data-testid='panel-simulation']"
+          timeout_sec: 10
+        - type: "assert_visible"
+          selector: "[data-testid='panel-activity']"
+          timeout_sec: 10
+        - type: "assert_not_empty"
+          selector: "[data-testid='input-title']"
+          timeout_sec: 5
+        - type: "assert_not_empty"
+          selector: "[data-testid='input-top-copy']"
+          timeout_sec: 5
+        - type: "assert_visible"
+          selector: "[data-testid='btn-run']:not([disabled])"
+          timeout_sec: 5
+        - type: "assert_visible"
+          selector: "[data-testid='state-empty']"
+          timeout_sec: 5
+        - type: "screenshot"
+          name: "empty_state_desktop"
+      timeout_sec: 60
+
+    - id: "full_run_mock"
+      service: "web"
+      name: "Full simulation run with mock mode"
+      env:
+        SELLER_WAR_GAME_MODEL_MODE: "mock"
+      start_route: "/"
+      steps:
+        - type: "goto"
+          url: "/"
+          timeout_sec: 15
+        - type: "clear_and_type"
+          selector: "[data-testid='input-title']"
+          value: "테스트 타이틀 변경"
+          timeout_sec: 5
+        - type: "clear_and_type"
+          selector: "[data-testid='input-iteration-count']"
+          value: "1"
+          timeout_sec: 5
+        - type: "click"
+          selector: "[data-testid='btn-run']"
+          timeout_sec: 5
+        - type: "assert_attribute"
+          selector: "[data-testid='btn-run']"
+          attribute: "disabled"
+          timeout_sec: 5
+        - type: "wait_for_visible"
+          selector: "[data-testid='sim-canvas']"
+          timeout_sec: 10
+        - type: "assert_visible"
+          selector: "[data-testid^='archetype-']"
+          timeout_sec: 10
+        - type: "screenshot"
+          name: "loading_state_desktop"
+        - type: "wait_for_visible"
+          selector: "[data-testid='state-completed']"
+          timeout_sec: 180
+        - type: "assert_not_empty"
+          selector: "[data-testid='metric-baseline']"
+          timeout_sec: 5
+        - type: "assert_not_empty"
+          selector: "[data-testid='metric-final']"
+          timeout_sec: 5
+        - type: "assert_not_empty"
+          selector: "[data-testid='metric-holdout']"
+          timeout_sec: 5
+        - type: "assert_not_empty"
+          selector: "[data-testid='strategy-summary']"
+          timeout_sec: 5
+        - type: "assert_visible"
+          selector: "[data-testid='diff-title']"
+          timeout_sec: 5
+        - type: "assert_visible"
+          selector: "[data-testid='diff-top-copy']"
+          timeout_sec: 5
+        - type: "assert_visible"
+          selector: "[data-testid='diff-price']"
+          timeout_sec: 5
+        - type: "assert_not_empty"
+          selector: "[data-testid='artifact-output']"
+          timeout_sec: 5
+        - type: "screenshot"
+          name: "completed_state_desktop"
+      required_screenshots: ["empty_state_desktop", "loading_state_desktop", "completed_state_desktop"]
+      timeout_sec: 240
+
+  screenshot_checks:
+    - id: "empty_desktop"
+      service: "web"
+      route: "/"
+      name: "Empty state desktop"
+      viewport:
+        width: 1440
+        height: 900
+      full_page: false
+      required_elements: ["panel-input", "panel-simulation", "panel-activity", "product-card", "input-title", "competitors-card", "btn-run", "state-empty"]
+      forbidden_elements: ["raw JSON in product-card", "layout collapse", "horizontal overflow"]
+
+    - id: "completed_desktop"
+      service: "web"
+      route: "/"
+      name: "Completed state with results"
+      viewport:
+        width: 1440
+        height: 900
+      full_page: true
+      required_elements: ["metric-baseline", "metric-final", "metric-holdout", "strategy-summary", "diff-title", "diff-top-copy", "diff-price", "artifact-output", "state-completed"]
+      forbidden_elements: ["raw JSON in strategy-summary", "raw JSON in diff-output", "state-empty visible", "layout collapse"]
+
+  semantic_focus:
+    - "Does the dashboard clearly show the simulation result without requiring code knowledge?"
+    - "Can a non-technical judge understand the recommendation and why it was chosen?"
+    - "Is the force-directed graph animation visible and meaningful during SSE streaming?"
+    - "Are all before→after diffs formatted as readable cards, not raw JSON?"
+    - "Does the artifact file match exactly what is displayed in the UI?"
+
+product_contract:
+  primary_user: "hackathon judge evaluating a 5-hour Ralph Loop product outcome"
+  core_outcome: "edit a product listing, run a 1000-buyer simulation, and get a defendable optimization recommendation with holdout validation"
+  demo_story: "open the dashboard, review the product and competitors, edit the title and price, run the simulation, watch the buyer agents choose in real-time, then review the recommendation with before/after diff"
+  main_flows:
+    - id: "flow_001"
+      actor: "seller"
+      entry: "open dashboard at http://127.0.0.1:3001"
+      success: "see recommended strategy with holdout_uplift > 0 and all diffs displayed"
+  non_goals:
+    - "Shopify mutation"
+    - "live competitor scraping"
+    - "image editing/generation"
+    - "multi-product support"
+    - "deployment to cloud"
+    - "user authentication"
+    - "long-term history/analytics"
+
+ontology_schema:
+  name: "SellerWarGame"
+  description: "Buyer-agent swarm simulation for diff-only seller listing optimization"
+  fields:
+    - name: "product"
+      field_type: "entity"
+      description: "Seller product with mutable fields (title, top_copy, price) and immutable fields (product_name, brand_name)"
+      required: true
+    - name: "competitor"
+      field_type: "entity"
+      description: "Competitor products (3), read-only: product_name, price_krw"
+      required: true
+    - name: "buyer_archetype"
+      field_type: "entity"
+      description: "8 buyer personas: price_sensitive, value_seeker, premium_quality, trust_first, aesthetics_first, desperate_hairloss, promo_hunter, gift_or_family_buyer"
+      required: true
+    - name: "strategy"
+      field_type: "entity"
+      description: "Candidate optimization strategy: id, title, top_copy, price_krw, rationale"
+      required: true
+    - name: "evaluation"
+      field_type: "action"
+      description: "Archetype evaluates strategies, producing choice distribution across products"
+      required: true
+    - name: "realism_judgment"
+      field_type: "action"
+      description: "Merchant-realism judge validates strategy feasibility: verdict pass/fail"
+      required: true
+    - name: "simulation_run"
+      field_type: "entity"
+      description: "Complete simulation: N iterations of strategy→evaluation→judgment→scoring, plus holdout"
+      required: true
+    - name: "diff"
+      field_type: "entity"
+      description: "Before→after comparison: title, top_copy, price changes between baseline and selected strategy"
+      required: true
+    - name: "holdout_validation"
+      field_type: "action"
+      description: "Out-of-sample validation with 200 buyers; holdout_uplift > 0 required"
+      required: true
+    - name: "sse_event"
+      field_type: "action"
+      description: "Real-time streaming events: iteration_start, agent_decision, iteration_complete, holdout_start, simulation_complete"
+      required: true
+
+evaluation_principles:
+  - name: "simulation_correctness"
+    description: "Pipeline produces valid results: fixture parsing, strategy schema, buyer evaluation, realism judgment, margin floor, holdout, diff fields"
+    weight: 1.0
+  - name: "holdout_validation"
+    description: "Selected strategy achieves holdout_uplift > 0 and margin_floor_violations = 0"
+    weight: 1.0
+  - name: "data_consistency"
+    description: "UI display, API response, and artifact file all match for 7 key fields"
+    weight: 1.0
+  - name: "ui_completeness"
+    description: "All ~40 data-testid elements render correctly across 4 UI states"
+    weight: 1.0
+  - name: "visual_quality"
+    description: "No raw JSON, 3-panel horizontal layout, KRW formatting, dark theme, proper diff formatting"
+    weight: 0.9
+  - name: "sse_streaming"
+    description: "SSE events delivered in correct sequence with valid data per iteration"
+    weight: 0.9
+  - name: "simulation_visualization"
+    description: "Force-directed graph animates correctly with archetype→product edges during SSE"
+    weight: 0.8
+  - name: "input_override"
+    description: "All 6 editable fields propagate to simulation and produce different results"
+    weight: 0.9
+  - name: "error_resilience"
+    description: "Error state shows readable message, no stack traces, button re-enabled"
+    weight: 0.7
+
+exit_conditions:
+  - name: "all_gates_pass"
+    description: "All 8 test spec verification gates pass"
+    criteria: "Engine, Live OpenAI, HTTP API, Browser UI, SSE Streaming, Editable Input, Visual/Usability, Artifact/Consistency, Stability gates all pass (Repeatability Gate는 Stability Gate로 대체 — LLM 비결정적 특성으로 결정론적 재현 불요)"
+  - name: "holdout_uplift_positive"
+    description: "CRITICAL: The selected strategy must outperform baseline in holdout validation"
+    criteria: |
+      After a live simulation run completes, verify:
+      1. holdout.holdout_uplift > 0 (final revenue > baseline revenue in holdout cohort)
+      2. margin_floor_violations = 0 (no iteration violates the margin floor)
+      If holdout_uplift <= 0, the run is INVALID — do NOT mark as PASS.
+      This is a hard gate: the product's core value proposition fails if the recommended strategy loses money.
+      Re-run the simulation or adjust iteration count/margin floor until a positive uplift is achieved.
+  - name: "evidence_bundle_complete"
+    description: "All 11 evidence items collected"
+    criteria: "npm test, node --check, mock E2E, live E2E, 4 screenshots, artifact, consistency proof, input override proof"
+  - name: "live_run_success"
+    description: "At least one live OpenAI simulation succeeds end-to-end via browser with positive holdout"
+    criteria: "btn-run click → SSE stream → simulation_complete → holdout_uplift > 0 AND margin_floor_violations = 0. A run with negative holdout_uplift does NOT count as success."
+  - name: "no_raw_json"
+    description: "No raw JSON visible in any UI card"
+    criteria: "verifyNoRawJson passes for all data display areas"
+
+metadata:
+  seed_id: "swarmops_hackathon_day"
+  version: "1.0.0"
+  created_at: "2026-03-27T04:45:00+09:00"
+  ambiguity_score: 0.15
+  interview_id: "interview_20260327_024642"
+
+provenance:
+  created_at: "2026-03-27T04:45:00+09:00"
+  source_task: "seller-war-game ralphthon 0→1 build"
+  clarified_by: "ouroboros interview + manual PRD review"
+  prd_path: ".omx/plans/prd-seller-war-game-ralphthon-0to1.md"
+  test_spec_path: ".omx/plans/test-spec-seller-war-game-ralphthon-0to1.md"

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "ralphthon-seoul-mid-presentation-en": {
+      "source": "NomaDamas/Ralphton-Seoul-Presentaion-Skill",
+      "sourceType": "github",
+      "computedHash": "a520475e69352dfc592f3ce8003b7d43aeca044361e1025a50058cdbab7a77d5"
+    },
+    "ralphthon-seoul-mid-presentation-ko": {
+      "source": "NomaDamas/Ralphton-Seoul-Presentaion-Skill",
+      "sourceType": "github",
+      "computedHash": "f5fff960ede1b96841cc02b61461de3adc10ed2abf83426d4fe2ddab46599158"
+    }
+  }
+}

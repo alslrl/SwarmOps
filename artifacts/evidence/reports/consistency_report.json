@@ -1,0 +1,458 @@
+{
+  "generated_at": "2026-03-28T13:58:43.003Z",
+  "sub_ac": "8c",
+  "description": "Artifact consistency check: screenshots, visual_checks.json, SSE event log, revenue chart data, run ID consistency.",
+  "checks": [
+    {
+      "id": "screenshot_exists_01-initial-load.png",
+      "description": "Screenshot 01-initial-load.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/01-initial-load.png",
+        "size_bytes": 156293,
+        "mtime": "2026-03-28T13:54:36.528Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_02-simulation-running.png",
+      "description": "Screenshot 02-simulation-running.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/02-simulation-running.png",
+        "size_bytes": 162322,
+        "mtime": "2026-03-28T13:54:36.913Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_02b-loading-particles-midflight.png",
+      "description": "Screenshot 02b-loading-particles-midflight.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/02b-loading-particles-midflight.png",
+        "size_bytes": 167180,
+        "mtime": "2026-03-28T13:54:39.137Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_03-results-populated.png",
+      "description": "Screenshot 03-results-populated.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/03-results-populated.png",
+        "size_bytes": 321749,
+        "mtime": "2026-03-28T13:54:37.377Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_04-error-state.png",
+      "description": "Screenshot 04-error-state.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/04-error-state.png",
+        "size_bytes": 173437,
+        "mtime": "2026-03-28T13:54:37.659Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_05-agent-profile-popup.png",
+      "description": "Screenshot 05-agent-profile-popup.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/05-agent-profile-popup.png",
+        "size_bytes": 204534,
+        "mtime": "2026-03-28T13:54:38.103Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_ac4d-01-mid-flow-sim-canvas.png",
+      "description": "Screenshot ac4d-01-mid-flow-sim-canvas.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/ac4d-01-mid-flow-sim-canvas.png",
+        "size_bytes": 119560,
+        "mtime": "2026-03-28T13:54:40.204Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_ac4d-02-mid-flow-full-page.png",
+      "description": "Screenshot ac4d-02-mid-flow-full-page.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/ac4d-02-mid-flow-full-page.png",
+        "size_bytes": 343781,
+        "mtime": "2026-03-28T13:54:40.300Z"
+      }
+    },
+    {
+      "id": "screenshot_exists_ac4d-03-canvas-pixel-check.png",
+      "description": "Screenshot ac4d-03-canvas-pixel-check.png exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/screenshots/ac4d-03-canvas-pixel-check.png",
+        "size_bytes": 55422,
+        "mtime": "2026-03-28T13:54:41.411Z"
+      }
+    },
+    {
+      "id": "screenshot_count",
+      "description": "Exactly 9 screenshots present",
+      "status": "PASS",
+      "details": {
+        "expected": 9,
+        "actual": 9,
+        "files": [
+          "01-initial-load.png",
+          "02-simulation-running.png",
+          "02b-loading-particles-midflight.png",
+          "03-results-populated.png",
+          "04-error-state.png",
+          "05-agent-profile-popup.png",
+          "ac4d-01-mid-flow-sim-canvas.png",
+          "ac4d-02-mid-flow-full-page.png",
+          "ac4d-03-canvas-pixel-check.png"
+        ]
+      }
+    },
+    {
+      "id": "screenshot_naming",
+      "description": "All screenshots follow naming convention (NN[b]-kebab.png or acNNd-NN-kebab.png)",
+      "status": "PASS",
+      "details": {
+        "pattern": "/^(?:[0-9]{2}[a-z]?|ac[0-9]+[a-z]?-[0-9]+)-[a-z0-9-]+\\.png$/",
+        "violations": []
+      }
+    },
+    {
+      "id": "visual_checks_exists",
+      "description": "visual_checks.json exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/visual_checks.json",
+        "size_bytes": 4954
+      }
+    },
+    {
+      "id": "visual_checks_schema",
+      "description": "visual_checks.json has required fields (generated_at, summary, verifiers, verdict)",
+      "status": "PASS",
+      "details": {
+        "missing_fields": [],
+        "verdict": "PASS"
+      }
+    },
+    {
+      "id": "visual_checks_verdict",
+      "description": "visual_checks.json verdict is PASS",
+      "status": "PASS",
+      "details": {
+        "verdict": "PASS"
+      }
+    },
+    {
+      "id": "visual_checks_no_failures",
+      "description": "visual_checks.json has no failed verifiers",
+      "status": "PASS",
+      "details": {
+        "failed_verifiers": []
+      }
+    },
+    {
+      "id": "visual_judgment_report_exists",
+      "description": "visual_judgment_report.json exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/visual_judgment_report.json",
+        "size_bytes": 3874
+      }
+    },
+    {
+      "id": "visual_judgment_report_verdict",
+      "description": "visual_judgment_report.json verdict is PASS",
+      "status": "PASS",
+      "details": {
+        "verdict": "PASS",
+        "summary": {
+          "total": 16,
+          "passed": 15,
+          "failed": 0,
+          "warned": 1,
+          "pass_rate": 94
+        }
+      }
+    },
+    {
+      "id": "run_summary_exists",
+      "description": "latest-run-summary.json exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/latest-run-summary.json",
+        "size_bytes": 768
+      }
+    },
+    {
+      "id": "run_summary_schema",
+      "description": "latest-run-summary.json has required fields",
+      "status": "PASS",
+      "details": {
+        "missing_fields": [],
+        "selected_strategy_id": "strategy_1"
+      }
+    },
+    {
+      "id": "run_summary_diff_shape",
+      "description": "latest-run-summary.json diff has title/top_copy/price keys",
+      "status": "PASS",
+      "details": {
+        "diff_keys": [
+          "title",
+          "top_copy",
+          "price"
+        ]
+      }
+    },
+    {
+      "id": "run_summary_krw_integers",
+      "description": "latest-run-summary.json price values are positive KRW integers",
+      "status": "PASS",
+      "details": {
+        "price_before": 29900,
+        "price_after": 28900,
+        "are_positive_integers": true
+      }
+    },
+    {
+      "id": "sse_agent_decision_count",
+      "description": "SSE stream emits exactly 800 agent_decision events per iteration",
+      "status": "PASS",
+      "details": {
+        "expected": 800,
+        "actual": 800
+      }
+    },
+    {
+      "id": "sse_iteration_events",
+      "description": "SSE stream emits exactly 1 iteration_start and 1 iteration_complete event",
+      "status": "PASS",
+      "details": {
+        "iteration_start_count": 1,
+        "iteration_complete_count": 1
+      }
+    },
+    {
+      "id": "sse_simulation_complete",
+      "description": "SSE stream ends with exactly 1 simulation_complete event",
+      "status": "PASS",
+      "details": {
+        "simulation_complete_count": 1
+      }
+    },
+    {
+      "id": "sse_agent_decision_schema",
+      "description": "All agent_decision events have valid agent_id, archetype_id, chosen_product",
+      "status": "PASS",
+      "details": {
+        "invalid_count": 0,
+        "sample_invalid": []
+      }
+    },
+    {
+      "id": "sse_archetype_breakdown_format",
+      "description": "iteration_complete.archetype_breakdown is in FLAT format { [archetypeId]: { our_product, competitor_a, ... } }",
+      "status": "PASS",
+      "details": {
+        "has_archetype_breakdown": true,
+        "flat_format_valid": true,
+        "archetype_keys": [
+          "aesthetics_first",
+          "gift_or_family_buyer",
+          "premium_quality",
+          "price_sensitive",
+          "promo_hunter",
+          "trust_first",
+          "urgency_buyer",
+          "value_seeker"
+        ]
+      }
+    },
+    {
+      "id": "sse_choice_summary_total",
+      "description": "iteration_complete.choice_summary sums to exactly 800 (total agents)",
+      "status": "PASS",
+      "details": {
+        "expected_total": 800,
+        "actual_total": 800,
+        "choice_summary": {
+          "our_product": 151,
+          "competitor_a": 136,
+          "competitor_b": 181,
+          "competitor_c": 182,
+          "pass": 150
+        }
+      }
+    },
+    {
+      "id": "revenue_chart_data_present",
+      "description": "Revenue chart data (winner_revenue per iteration) is present in iteration_complete events",
+      "status": "PASS",
+      "details": {
+        "iteration_count": 1,
+        "revenue_values": [
+          4363900
+        ]
+      }
+    },
+    {
+      "id": "revenue_chart_data_krw_integers",
+      "description": "Revenue chart winner_revenue values are positive KRW integers",
+      "status": "PASS",
+      "details": {
+        "revenue_values": [
+          4363900
+        ]
+      }
+    },
+    {
+      "id": "revenue_chart_archetype_breakdown",
+      "description": "Revenue chart data includes archetype_breakdown for insights panel rendering",
+      "status": "PASS",
+      "details": {
+        "archetype_breakdown_keys_per_iteration": [
+          [
+            "aesthetics_first",
+            "gift_or_family_buyer",
+            "premium_quality",
+            "price_sensitive",
+            "promo_hunter",
+            "trust_first",
+            "urgency_buyer",
+            "value_seeker"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "run_id_consistency",
+      "description": "Artifact generated_at timestamps are consistent (within 1 hour)",
+      "status": "PASS",
+      "details": {
+        "timestamps": {
+          "latest-run-summary.json": "2026-03-28T13:55:56.065Z",
+          "visual_checks.json": "2026-03-28T13:46:52.600Z",
+          "visual_judgment_report.json": "2026-03-28T13:54:39.793Z"
+        },
+        "max_drift_seconds": 543.465,
+        "note": "All artifact timestamps within 543s of each other — consistent run context."
+      }
+    },
+    {
+      "id": "screenshot_capture_session",
+      "description": "All screenshots were captured within a consistent session (mtime range < 5 min)",
+      "status": "PASS",
+      "details": {
+        "mtime_range_seconds": 4.883,
+        "oldest": "2026-03-28T13:54:36.528Z",
+        "newest": "2026-03-28T13:54:41.411Z"
+      }
+    },
+    {
+      "id": "evidence_bundle_exists",
+      "description": "evidence_bundle.json exists and is non-empty",
+      "status": "PASS",
+      "details": {
+        "file": "artifacts/evidence_bundle.json",
+        "size_bytes": 13673
+      }
+    }
+  ],
+  "sse_event_log": {
+    "validated_at": "2026-03-28T13:59:01.815Z",
+    "source": "in-process SSE run (mock mode, iteration_count=1)",
+    "total_events": 804,
+    "event_type_counts": {
+      "iteration_start": 1,
+      "agent_decision": 800,
+      "iteration_complete": 1,
+      "holdout_start": 1,
+      "simulation_complete": 1
+    },
+    "agent_decision_sample": [
+      {
+        "agent_id": "aesthetics_first_0001",
+        "archetype_id": "aesthetics_first",
+        "chosen_product": "our_product",
+        "agent_index": 0
+      },
+      {
+        "agent_id": "aesthetics_first_0002",
+        "archetype_id": "aesthetics_first",
+        "chosen_product": "competitor_c",
+        "agent_index": 1
+      },
+      {
+        "agent_id": "aesthetics_first_0003",
+        "archetype_id": "aesthetics_first",
+        "chosen_product": "competitor_b",
+        "agent_index": 2
+      }
+    ],
+    "iteration_complete_summary": {
+      "winner_id": "strategy_1",
+      "winner_revenue": 4363900,
+      "accepted": true,
+      "choice_summary": {
+        "our_product": 151,
+        "competitor_a": 136,
+        "competitor_b": 181,
+        "competitor_c": 182,
+        "pass": 150
+      },
+      "archetype_breakdown_keys": [
+        "aesthetics_first",
+        "gift_or_family_buyer",
+        "premium_quality",
+        "price_sensitive",
+        "promo_hunter",
+        "trust_first",
+        "urgency_buyer",
+        "value_seeker"
+      ]
+    }
+  },
+  "revenue_chart_data": {
+    "validated_at": "2026-03-28T13:59:01.815Z",
+    "source": "iteration_complete events from in-process SSE run (mock mode)",
+    "iteration_count": 1,
+    "data_points": [
+      {
+        "iteration": 1,
+        "winner_id": "strategy_1",
+        "winner_revenue": 4363900,
+        "accepted": true,
+        "archetype_breakdown_keys": [
+          "aesthetics_first",
+          "gift_or_family_buyer",
+          "premium_quality",
+          "price_sensitive",
+          "promo_hunter",
+          "trust_first",
+          "urgency_buyer",
+          "value_seeker"
+        ],
+        "choice_summary": {
+          "our_product": 151,
+          "competitor_a": 136,
+          "competitor_b": 181,
+          "competitor_c": 182,
+          "pass": 150
+        }
+      }
+    ]
+  },
+  "summary": {
+    "total": 33,
+    "passed": 33,
+    "warned": 0,
+    "failed": 0
+  },
+  "verdict": "PASS"
+}
